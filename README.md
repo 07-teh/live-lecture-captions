@@ -1,4 +1,4 @@
-# Live Lecture Captions (HAHAHAv2)
+# Live Lecture Captions
 
 **Real-time English lecture captions with a Chinese translation under every sentence.**
 

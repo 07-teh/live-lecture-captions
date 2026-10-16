@@ -51,7 +51,7 @@ STT_BATCH_TIMEOUT_SECONDS = 60
 STT_STOP_GIVEUP_SECONDS = 120     # after Stop, keep trying this long to transcribe what is still buffered
 STT_SESSION_GRACE_SECONDS = 600
 STT_BYTES_PER_SECOND = STT_SAMPLE_RATE * 2
-STT_DEBUG_FAULTS = os.getenv("HAHAHA_DEBUG_FAULTS", "").strip().lower() in {"1", "true", "yes"}
+STT_DEBUG_FAULTS = os.getenv("CAPTIONS_DEBUG_FAULTS", "").strip().lower() in {"1", "true", "yes"}
 STT_KEYTERMS = [
     item.strip()
     for item in re.split(r"[,;\n]+", os.getenv("STT_KEYTERMS", ""))
@@ -76,9 +76,9 @@ COURSE_IMPORT_MAX_BYTES = 30 * 1024 * 1024
 COURSE_IMPORT_MAX_PAGES = 400
 COURSE_IMPORT_MAX_CHARS = 400_000
 
-AUTH_TOKEN = os.getenv("HAHAHA_AUTH_TOKEN", "").strip()
+AUTH_TOKEN = os.getenv("CAPTIONS_AUTH_TOKEN", "").strip()
 AUTH_ENABLED = bool(AUTH_TOKEN)
-HISTORY_DB_PATH = Path(os.getenv("HISTORY_DB_PATH", "").strip() or str(CURRENT_DIR / "hahahav2_history.sqlite3"))
+HISTORY_DB_PATH = Path(os.getenv("HISTORY_DB_PATH", "").strip() or str(CURRENT_DIR / "history.sqlite3"))
 HISTORY_DEFAULT_LIMIT = 50
 HISTORY_MAX_LIMIT = 200
 
@@ -140,7 +140,7 @@ def require_auth(request: Request):
     if not AUTH_ENABLED:
         return
     bearer = (request.headers.get("Authorization") or "").removeprefix("Bearer ").strip()
-    token = bearer or (request.headers.get("X-HAHAHA-Token") or "").strip()
+    token = bearer or (request.headers.get("X-Captions-Token") or "").strip()
     if token != AUTH_TOKEN:
         raise HTTPException(status_code=401, detail="Unauthorized.")
 
@@ -1421,7 +1421,7 @@ async def websocket_stt_endpoint(websocket: WebSocket):
                 if not STT_API_KEY:
                     await send({
                         "event": "error",
-                        "message": "STT API key missing. Set STT_API_KEY for HAHAHAv2.",
+                        "message": "STT API key missing. Set STT_API_KEY in .env.",
                     })
                     continue
                 if session is None:

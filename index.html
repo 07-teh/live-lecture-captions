@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HAHAHAv2</title>
+<title>Live Lecture Captions</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════════════════════════════════
-   HAHAHAv2 · Live Transcription — Claude application layout
+   Live Lecture Captions — Claude application layout
    Persistent left sidebar · centered conversation column · bottom composer.
    Warm paper, clay accent, serif display. Dark default, .theme-light = ivory.
    ═══════════════════════════════════════════════════════════════════ */
@@ -1674,8 +1674,8 @@ async function toggleMini() {
     return;
   }
 
-  if (window.hahahav2Desktop) {
-    await window.hahahav2Desktop.enterMiniMode();
+  if (window.lectureCaptionsDesktop) {
+    await window.lectureCaptionsDesktop.enterMiniMode();
     miniVisible = true;
     document.body.classList.add('mini-mode');
     $('miniwin').classList.add('show');
@@ -1732,7 +1732,7 @@ async function restoreMainWindow() {
   document.body.classList.remove('mini-mode');
   $('railMini')?.classList.remove('active');
   miniVisible = false; pipTxEl = null; pipLiveEl = null;
-  if (window.hahahav2Desktop) await window.hahahav2Desktop.exitMiniMode();
+  if (window.lectureCaptionsDesktop) await window.lectureCaptionsDesktop.exitMiniMode();
 }
 
 function _lastLines(text, n) {
