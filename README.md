@@ -110,7 +110,9 @@ Requirements: macOS, **Python 3.10+**, **Google Chrome**, a Deepgram API key and
 
 If macOS blocks the script the first time, right-click `start.command` → **Open**.
 
-The server only listens on `127.0.0.1`. Keys stay in `.env` on your machine, which is git-ignored.
+The server only listens on `127.0.0.1`, and it rejects requests whose `Host` or `Origin` is not its own
+page, so other websites open in the same browser can't read or change your history. Keys stay in
+`.env` on your machine, which is git-ignored.
 
 ## Known limitations
 

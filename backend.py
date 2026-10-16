@@ -20,7 +20,7 @@ import websockets
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, PlainTextResponse
 
 
 CURRENT_DIR = Path(__file__).resolve().parent
@@ -28,6 +28,10 @@ load_dotenv(CURRENT_DIR / ".env")
 
 HOST = "127.0.0.1"
 PORT = 8081
+# Only the page this server serves may talk to it. Any website open in the same browser can send
+# requests to 127.0.0.1, so CORS alone is not enough: Host stops DNS rebinding, Origin stops other sites.
+ALLOWED_HOSTS = {f"127.0.0.1:{PORT}", f"localhost:{PORT}"}
+ALLOWED_ORIGINS = {f"http://127.0.0.1:{PORT}", f"http://localhost:{PORT}"}
 STT_API_KEY = os.getenv("STT_API_KEY", os.getenv("DEEPGRAM_API_KEY", "")).strip()
 STT_MODEL = os.getenv("STT_MODEL", "nova-3").strip()
 STT_API_URL = os.getenv("STT_API_URL", "https://api.deepgram.com/v1/listen").strip()
@@ -86,13 +90,35 @@ async def lifespan(app: FastAPI):
     janitor.cancel()
 
 
+class LocalPageOnlyMiddleware:
+    """Rejects HTTP and WebSocket requests whose Host or Origin is not this server's own page.
+    Requests without an Origin header (same-origin GETs, curl) are allowed."""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] in ("http", "websocket"):
+            headers = dict(scope["headers"])
+            host = headers.get(b"host", b"").decode("latin-1").strip().lower()
+            origin = headers.get(b"origin", b"").decode("latin-1").strip().lower()
+            if host not in ALLOWED_HOSTS or (origin and origin not in ALLOWED_ORIGINS):
+                if scope["type"] == "http":
+                    await PlainTextResponse("Forbidden.", status_code=403)(scope, receive, send)
+                else:
+                    await send({"type": "websocket.close", "code": 1008})
+                return
+        await self.app(scope, receive, send)
+
+
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=sorted(ALLOWED_ORIGINS),
     allow_methods=["*"],
     allow_headers=["*"],
 )
+app.add_middleware(LocalPageOnlyMiddleware)   # added last, so it runs first
 
 
 CJK_CHAR_RE = re.compile(r"[\u3400-\u9FFF\u3040-\u30FF]")
