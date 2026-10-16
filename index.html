@@ -1,0 +1,1846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HAHAHAv2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   HAHAHAv2 · Live Transcription — Claude application layout
+   Persistent left sidebar · centered conversation column · bottom composer.
+   Warm paper, clay accent, serif display. Dark default, .theme-light = ivory.
+   ═══════════════════════════════════════════════════════════════════ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+html { width: 100%; height: 100%; overflow: hidden; -moz-osx-font-smoothing: grayscale; }
+
+/* ── Tokens · dark (default) ── */
+:root {
+  --font:  'DM Sans', system-ui, -apple-system, "Segoe UI", sans-serif;
+  --serif: 'Fraunces', 'DM Serif Display', Georgia, serif;
+
+  --bg:         #262624;
+  --surface:    #30302E;
+  --surface-2:  #3A3A36;
+  --sidebar-bg: #1F1F1D;
+  --composer:   #32322F;
+
+  --ink:    #F5F4EE;
+  --ink-2:  #CDCBC2;
+  --ink-3:  #A6A49B;
+  --ink-4:  #74726B;
+
+  --border:        rgba(245, 244, 238, 0.10);
+  --border-strong: rgba(245, 244, 238, 0.18);
+  --hover:         rgba(245, 244, 238, 0.06);
+  --hover-2:       rgba(245, 244, 238, 0.10);
+  --inset:         rgba(0, 0, 0, 0.18);
+
+  --clay:    #D97757;
+  --clay-2:  #E89A7E;
+  --clay-t:  rgba(217, 119, 87, 0.15);
+  --clay-btn:#C15F3C;
+  --clay-btn-h:#CC6A45;
+  --on-clay: #FBF3EC;
+
+  --alert:   #D4583A;
+  --alert-t: rgba(212, 88, 58, 0.16);
+  --ok:   #7E9E80;
+  --warn: #D9A05B;
+  --danger: #E07A63;
+  --kraft: #D9A283;
+
+  --s1: 0 1px 2px rgba(0,0,0,.24), 0 6px 18px rgba(0,0,0,.22);
+  --s2: 0 18px 50px rgba(0,0,0,.34);
+  --s3: 0 32px 90px rgba(0,0,0,.48);
+
+  --r-sm: 9px; --r-md: 13px; --r-lg: 18px; --r-xl: 24px;
+  --sb-w: 272px;
+  --col:  1040px;
+}
+
+/* ── Tokens · light (ivory paper) ── */
+body.theme-light {
+  --bg:         #FAF9F5;
+  --surface:    #FFFFFF;
+  --surface-2:  #F4F2EC;
+  --sidebar-bg: #F2F0E9;
+  --composer:   #FFFFFF;
+
+  --ink:    #1F1E1D;
+  --ink-2:  #3D3C37;
+  --ink-3:  #6B6862;
+  --ink-4:  #A39F94;
+
+  --border:        rgba(45, 40, 33, 0.12);
+  --border-strong: rgba(45, 40, 33, 0.22);
+  --hover:         rgba(45, 40, 33, 0.05);
+  --hover-2:       rgba(45, 40, 33, 0.09);
+  --inset:         rgba(45, 40, 33, 0.05);
+
+  --clay:    #C2613E;
+  --clay-2:  #B5562F;
+  --clay-t:  rgba(194, 97, 62, 0.11);
+  --clay-btn:#C2613E;
+  --clay-btn-h:#AD5232;
+  --on-clay: #FFFFFF;
+
+  --alert:   #C25A38;
+  --alert-t: rgba(194, 90, 56, 0.11);
+  --ok:   #5E8466;
+  --warn: #C08A3E;
+  --danger: #C0503A;
+  --kraft: #B07E5C;
+
+  --s1: 0 1px 2px rgba(60,55,48,.06), 0 8px 24px rgba(60,55,48,.07);
+  --s2: 0 18px 50px rgba(60,55,48,.12);
+  --s3: 0 32px 90px rgba(60,55,48,.20);
+}
+
+body {
+  width: 100%; height: 100dvh; overflow: hidden;
+  display: flex; flex-direction: row;
+  font-family: var(--font); color: var(--ink); background: var(--bg);
+}
+
+/* ── Drag regions (desktop app) ── */
+.appbar { -webkit-app-region: drag; }
+.sidebar, .composer, .miniwin { -webkit-app-region: no-drag; }
+.miniwin-bar { -webkit-app-region: drag; }
+.miniwin-dot.red, .miniwin-restore { -webkit-app-region: no-drag; }
+
+/* ── Keyframes ── */
+@keyframes fadeInUp   { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform:none; } }
+@keyframes fadeInLeft { from { opacity:0; transform: translateX(-10px); } to { opacity:1; transform:none; } }
+@keyframes textPop    { from { opacity:0; transform: translateY(4px); } to { opacity:1; transform:none; } }
+@keyframes ripple     { to { transform: scale(3); opacity: 0; } }
+@keyframes blink      { 0%,100% { opacity:1; transform: scale(1); } 50% { opacity:.4; transform: scale(.7); } }
+@keyframes recPulse   { 0%,100% { box-shadow: 0 8px 24px var(--alert-t), 0 0 0 0 var(--alert-t); } 50% { box-shadow: 0 10px 30px var(--alert-t), 0 0 0 8px transparent; } }
+
+/* generic icon button */
+.icon-btn { position: relative; flex-shrink: 0; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: var(--r-sm); background: transparent; color: var(--ink-3); cursor: pointer; transition: background-color .14s, color .14s, border-color .14s; }
+.icon-btn svg { pointer-events: none; }
+.icon-btn:hover { background: var(--hover); color: var(--ink); }
+.icon-btn:active { transform: scale(.93); }
+.icon-btn.active { color: var(--ink); }
+.icon-btn:focus { outline: none; }
+.icon-btn:focus-visible { outline: 2px solid var(--clay); outline-offset: 2px; }
+.tooltip { position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); padding: 5px 10px; border-radius: 7px; white-space: nowrap; background: #1A1A18; color: #F5F4EE; font-size: 11.5px; font-weight: 500; pointer-events: none; opacity: 0; transition: opacity .14s; z-index: 200; box-shadow: var(--s1); }
+.icon-btn:hover .tooltip { opacity: 1; }
+.ripple-circle { position: absolute; border-radius: 50%; background: var(--hover-2); width: 36px; height: 36px; margin-left: -18px; margin-top: -18px; animation: ripple .5s linear; pointer-events: none; }
+
+/* ═══ Sidebar (persistent, collapsible) ═══ */
+.sidebar { width: 0; flex-shrink: 0; overflow: hidden; transition: width .24s cubic-bezier(.4,0,.2,1); }
+.sidebar.open { width: var(--sb-w); }
+.sidebar-inner {
+  width: var(--sb-w); height: 100dvh; display: flex; flex-direction: column;
+  padding: 16px 12px 12px; gap: 4px;
+  background: var(--sidebar-bg); border-right: 1px solid var(--border);
+}
+.sb-head { display: flex; align-items: center; justify-content: space-between; padding: 4px 6px 10px; }
+.sb-brand { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.sb-mark { width: 26px; height: 26px; flex-shrink: 0; display: grid; place-items: center; border-radius: 8px; background: var(--clay-btn); color: var(--on-clay); font-size: 15px; line-height: 1; }
+.sb-word { font-family: var(--serif); font-size: 17px; font-weight: 500; color: var(--ink); white-space: nowrap; }
+
+.sb-new { display: flex; align-items: center; gap: 9px; width: 100%; min-height: 42px; padding: 0 12px; margin-bottom: 6px; border: 1px solid var(--border); border-radius: var(--r-md); background: var(--surface); color: var(--ink); cursor: pointer; font: 600 13.5px var(--font); transition: background-color .14s, border-color .14s, box-shadow .14s; box-shadow: var(--s1); }
+.sb-new:hover { background: var(--hover-2); border-color: var(--border-strong); }
+.sb-new svg { flex-shrink: 0; color: var(--clay); }
+
+.history-search { width: 100%; min-height: 38px; padding: 0 12px; margin-bottom: 6px; border: 1px solid var(--border); border-radius: var(--r-md); background: transparent; color: var(--ink); outline: none; font: 400 12.5px var(--font); transition: border-color .14s, box-shadow .14s, background .14s; }
+.history-search::placeholder { color: var(--ink-4); }
+.history-search:focus { border-color: var(--clay); background: var(--surface); box-shadow: 0 0 0 3px var(--clay-t); }
+
+.sb-recents-head { display: flex; align-items: center; justify-content: space-between; padding: 6px 8px 4px; }
+.sb-recents-head span { font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-4); }
+.history-clear { border: none; background: transparent; color: var(--ink-4); cursor: pointer; font: 500 11px var(--font); padding: 2px 6px; border-radius: 5px; transition: color .14s, background .14s; }
+.history-clear:hover { color: var(--danger); background: var(--alert-t); }
+.history-count { color: var(--ink-4); font-size: 10px; padding: 0 8px 4px; min-height: 0; }
+
+.history-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: 1px; min-height: 0; margin: 0 -4px; padding: 0 4px; }
+.history-scroll::-webkit-scrollbar { width: 4px; }
+.history-scroll::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 99px; }
+.h-item { display: flex; align-items: center; gap: 9px; min-height: 40px; padding: 7px 9px; border-radius: var(--r-md); cursor: pointer; position: relative; transition: background-color .12s; animation: fadeInLeft .2s cubic-bezier(.22,1,.36,1) both; }
+.h-item:hover { background: var(--hover); }
+.h-item:hover .h-more { opacity: 1; }
+.h-icon { width: 22px; height: 22px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--ink-4); line-height: 0; }
+.h-name { flex: 1; font-size: 13px; color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.h-more { opacity: 0; border: none; background: transparent; color: var(--ink-4); cursor: pointer; padding: 4px 5px; border-radius: 5px; flex-shrink: 0; line-height: 0; display: flex; transition: opacity .12s, background .12s, color .12s; }
+.h-more:hover { background: var(--hover-2); color: var(--ink); }
+.h-menu { position: absolute; right: 4px; top: 34px; min-width: 132px; border: 1px solid var(--border); border-radius: var(--r-md); background: var(--surface); box-shadow: var(--s2); z-index: 50; overflow: hidden; display: none; }
+.h-menu.open { display: block; }
+.h-menu button { width: 100%; text-align: left; border: none; background: transparent; padding: 9px 12px; font: 400 12.5px var(--font); color: var(--ink-2); cursor: pointer; transition: background .12s; }
+.h-menu button:hover { background: var(--hover); }
+.h-menu button.del { color: var(--danger); }
+.h-empty { font-size: 12px; color: var(--ink-4); padding: 6px 9px; font-style: italic; }
+
+.sb-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; padding: 2px 6px 2px; }
+.sb-foot-actions { display: flex; align-items: center; gap: 2px; }
+.connection { display: flex; align-items: center; gap: 7px; color: var(--ink-3); font-size: 11px; font-weight: 500; white-space: nowrap; min-width: 0; }
+.connection span { overflow: hidden; text-overflow: ellipsis; }
+.conn-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-4); flex-shrink: 0; transition: background-color .3s, box-shadow .3s; }
+.conn-dot.ok { background: var(--ok); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 20%, transparent); }
+.conn-dot.off { background: var(--danger); animation: blink 2s ease-in-out infinite; }
+.conn-dot.connecting { background: var(--warn); animation: blink 1s ease-in-out infinite; }
+.theme-icon { display: block; pointer-events: none; }
+.theme-icon-moon { display: none; }
+body.theme-light .theme-icon-sun { display: none; }
+body.theme-light .theme-icon-moon { display: block; }
+
+/* ═══ Main ═══ */
+.main { flex: 1; min-width: 0; height: 100dvh; display: flex; flex-direction: column; background: var(--bg); }
+
+/* ═══ Conversation column ═══ */
+.convo { flex: 1; min-height: 0; overflow-y: auto; scroll-behavior: smooth; }
+.convo::-webkit-scrollbar { width: 8px; }
+.convo::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 99px; }
+.convo-col { width: 100%; max-width: var(--col); margin: 0 auto; padding: 28px 28px 40px; display: flex; flex-direction: column; gap: 22px; }
+
+.hero { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; padding: 36px 0 14px; }
+.hero-mark { width: 40px; height: 40px; display: grid; place-items: center; border-radius: 12px; background: var(--clay-t); color: var(--clay); font-size: 22px; }
+.hero-title { font-family: var(--serif); font-size: 30px; font-weight: 500; line-height: 1.15; color: var(--ink); letter-spacing: -.01em; }
+.hero-sub { font-size: 13.5px; color: var(--ink-3); max-width: 380px; line-height: 1.5; }
+.convo-col:has(#transcriptEl:not(.empty)) .hero { display: none; }
+
+/* single-pane transcription workspace */
+.workspace { display: grid; grid-template-columns: minmax(0, 1fr); align-items: stretch; }
+.card-source { display: flex; flex-direction: column; min-width: 0; }
+.card-source .card-body { flex: 1 1 auto; }
+
+/* message blocks (Claude conversation feel) */
+.card { animation: fadeInUp .3s cubic-bezier(.22,1,.36,1) both; }
+.card-header, .msg-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; }
+.card-title-row { display: flex; align-items: center; gap: 9px; }
+.card-chip { font-size: 9.5px; font-weight: 750; letter-spacing: .13em; text-transform: uppercase; color: var(--ink-4); }
+.card-meta { padding: 3px 8px; border-radius: 999px; background: var(--clay-t); color: var(--clay); font-size: 8.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+.card-actions { display: flex; gap: 6px; align-items: center; }
+.card-rule { display: none; }
+
+/* original = quiet bubble */
+.card-source .card-body {
+  padding: 16px 20px; border: 1px solid var(--border); border-radius: var(--r-lg);
+  background: var(--hover); color: var(--ink-2);
+  font-size: 16px; line-height: 1.6; min-height: 172px;
+}
+.card-body { outline: none; word-break: break-word; white-space: pre-wrap; text-wrap: pretty; }
+/* Sentence rows: English with its Chinese line underneath */
+.seg { margin: 0 0 13px; animation: seg-in .32s cubic-bezier(.2, .7, .3, 1) both; }
+@keyframes seg-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.card-body.instant .seg { animation: none; }
+/* English and Chinese share one left edge; every Chinese line already owns the border and padding,
+   so marking the newest one never shifts the text around. */
+.seg-en, .seg-tail { padding-left: 14px; transition: color .45s ease; }
+.seg-zh { margin-top: 3px; padding: 4px 11px; border-left: 3px solid transparent; border-radius: 0 9px 9px 0; color: color-mix(in srgb, var(--clay-2) 55%, var(--ink)); line-height: 1.6; transition: background-color .5s ease, border-color .5s ease; }
+@media (prefers-reduced-motion: reduce) { .seg { animation: none; } .seg-en, .seg-tail, .seg-zh { transition: none; } }
+.seg-zh:empty { display: none; }
+.seg.wait .seg-zh:empty { display: block; }
+.seg.wait .seg-zh:empty::before { content: attr(data-wait); color: var(--ink-3); font-size: .88em; }
+/* The newest translation is the one a reader is looking for */
+.seg.latest .seg-zh { border-left-color: var(--clay); background: var(--clay-t); }
+.rec-badge.warn { color: var(--warn); }
+.rec-badge.warn .rec-badge-dot { background: var(--warn); }
+.seg-zh.failed { color: var(--ink-4); font-style: italic; }
+.seg.spec .seg-en { color: var(--ink-2); }
+.seg-tail { color: var(--ink-3); margin-bottom: 0; animation: none; }
+body.theme-light .seg-zh { color: color-mix(in srgb, var(--clay-btn) 80%, var(--ink)); }
+.card-action { border: 1px solid var(--border); background: transparent; color: var(--ink-3); border-radius: 999px; padding: 3px 10px; font: 600 11px var(--font); cursor: pointer; }
+.card-action:hover { background: var(--hover); color: var(--ink); }
+.pill-toggle { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--border-strong); background: transparent; color: var(--ink-3); border-radius: 999px; padding: 6px 11px; font: 600 12px var(--font); cursor: pointer; white-space: nowrap; }
+.pill-toggle::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--ink-4); }
+.pill-toggle.on { color: var(--ink); border-color: var(--clay); background: var(--clay-t); }
+.pill-toggle.on::before { background: var(--clay); }
+.pill-toggle:disabled { opacity: .5; cursor: not-allowed; }
+.modal-backdrop { position: fixed; inset: 0; z-index: 60; display: none; align-items: center; justify-content: center; padding: 20px; background: rgba(0,0,0,.5); }
+.modal-backdrop.open { display: flex; }
+.modal { width: min(520px, 100%); max-height: 86vh; display: flex; flex-direction: column; gap: 10px; padding: 20px; border-radius: var(--r-lg); background: var(--surface); border: 1px solid var(--border-strong); box-shadow: var(--s3); }
+.modal h2 { margin: 0; font: 600 18px var(--serif); color: var(--ink); }
+.modal p { margin: 0; font-size: 12.5px; line-height: 1.55; color: var(--ink-3); }
+.modal textarea { flex: 1; min-height: 220px; resize: vertical; padding: 11px 12px; border-radius: var(--r-sm); border: 1px solid var(--border-strong); background: var(--inset); color: var(--ink); font: 500 13.5px/1.6 var(--font); outline: none; }
+.modal textarea:focus { border-color: var(--clay); }
+.modal-actions { display: flex; align-items: center; gap: 8px; }
+.modal-actions .spacer { flex: 1; }
+.btn { border: 1px solid var(--border-strong); background: transparent; color: var(--ink-2); border-radius: 999px; padding: 7px 14px; font: 600 12.5px var(--font); cursor: pointer; }
+.btn:hover { background: var(--hover); color: var(--ink); }
+.btn.primary { background: var(--clay-btn); border-color: var(--clay-btn); color: var(--on-clay); }
+.btn.primary:hover { background: var(--clay-btn-h); }
+.btn:disabled { opacity: .5; cursor: wait; }
+.balances { display: grid; gap: 4px; padding: 9px 6px 0; margin-top: 6px; border-top: 1px solid var(--border); font-size: 12px; color: var(--ink-3); }
+.balance-row { display: flex; justify-content: space-between; gap: 8px; }
+.balance-row b { font-weight: 600; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.balance-row.low b { color: var(--warn); }
+.balance-row.off b { color: var(--ink-4); font-weight: 500; }
+.card-body[contenteditable="true"]:empty::before,
+.card-body.empty::before { content: attr(data-ph); color: var(--ink-4); pointer-events: none; }
+.t-final { display: block; color: var(--ink); animation: textPop .3s cubic-bezier(.22,1,.36,1) both; }
+
+.rec-badge { display: none; align-items: center; gap: 6px; width: fit-content; margin-bottom: 8px; padding: 6px 11px; border-radius: 999px; background: var(--alert-t); color: var(--alert); font-size: 11px; font-weight: 600; animation: fadeInUp .22s ease both; }
+.rec-badge.show { display: inline-flex; }
+.rec-badge-dot { position: relative; width: 7px; height: 7px; border-radius: 50%; background: var(--alert); flex-shrink: 0; }
+.rec-badge-dot::after { content: ''; position: absolute; inset: -3px; border-radius: 50%; background: var(--alert); opacity: .28; animation: blink 1.1s ease-in-out infinite; }
+
+/* ═══ Composer (Claude-style) ═══ */
+.composer { flex-shrink: 0; padding: 0 28px 22px; }
+.composer-box {
+  width: 100%; max-width: var(--col); margin: 0 auto;
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 10px 10px 16px;
+  border: 1px solid var(--border-strong); border-radius: var(--r-xl);
+  background: var(--composer); box-shadow: var(--s2);
+}
+.scene-wrap { display: flex; align-items: center; gap: 7px; min-width: 0; flex: 1; }
+.scene-label { font-size: 9px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-4); white-space: nowrap; }
+.scene-wrap input { flex: 1; min-width: 60px; border: none; background: transparent; outline: none; font: 500 14px var(--font); color: var(--ink); }
+.scene-wrap input::placeholder { color: var(--ink-4); }
+.dock-status { display: flex; align-items: center; gap: 7px; color: var(--ink-4); font-size: 10.5px; white-space: nowrap; }
+.dock-status svg { color: var(--ink-3); }
+.level-wrap { display: none; align-items: flex-end; gap: 3px; height: 24px; flex-shrink: 0; }
+.level-wrap.show { display: flex; }
+.level-bar { width: 3px; border-radius: 2px; background: var(--clay); transition: height .07s ease-out; min-height: 3px; }
+.rec-btn { min-width: 122px; min-height: 44px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 9px; padding: 0 20px; border: none; border-radius: var(--r-lg); cursor: pointer; background: var(--clay-btn); color: var(--on-clay); font: 600 13.5px var(--font); box-shadow: 0 8px 22px var(--clay-t), inset 0 1px 0 rgba(255,255,255,.12); transition: background-color .16s, box-shadow .16s, transform .1s; }
+.rec-btn:hover { background: var(--clay-btn-h); transform: translateY(-1px); }
+.rec-btn:active { transform: scale(.97); }
+.rec-btn.active { background: var(--alert); color: #fff; animation: recPulse 2s ease-in-out infinite; }
+.rec-dot { width: 9px; height: 9px; border-radius: 50%; background: color-mix(in srgb, var(--on-clay) 78%, var(--clay-btn)); flex-shrink: 0; transition: background-color .2s; }
+.rec-btn.active .rec-dot { background: #fff; animation: blink 1.1s ease-in-out infinite; }
+.composer-hint { max-width: var(--col); margin: 9px auto 0; text-align: center; font-size: 10.5px; color: var(--ink-4); display: flex; align-items: center; justify-content: center; gap: 7px; }
+.composer-hint kbd { padding: 2px 6px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface-2); color: var(--ink-3); font: 600 9.5px var(--font); }
+
+/* ═══ Mini window ═══ */
+.miniwin { position: fixed; right: 20px; bottom: 24px; width: 320px; z-index: 600; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--border); border-radius: var(--r-lg); background: var(--surface); box-shadow: var(--s3); opacity: 0; pointer-events: none; transform-origin: bottom right; transform: scale(.9) translateY(8px); transition: opacity .2s, transform .24s cubic-bezier(.32,.72,0,1); }
+.miniwin.show { opacity: 1; pointer-events: auto; transform: none; }
+.miniwin-bar { display: flex; align-items: center; gap: 6px; padding: 12px 14px 10px; cursor: grab; flex-shrink: 0; user-select: none; border-bottom: 1px solid var(--border); }
+.miniwin-bar:active { cursor: grabbing; }
+.miniwin-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; transition: filter .14s; }
+.miniwin-dot:hover { filter: brightness(1.2); }
+.miniwin-dot.red { background: #FF5F57; cursor: pointer; }
+.miniwin-dot.yellow { background: #FFBD2E; }
+.miniwin-dot.green { background: #28C840; }
+.miniwin-bar-label { flex: 1; text-align: center; margin-right: 33px; font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-4); }
+.miniwin-live { width: 6px; height: 6px; border-radius: 50%; background: var(--alert); opacity: 0; flex-shrink: 0; transition: opacity .3s; animation: blink 1.1s ease-in-out infinite; }
+.miniwin-live.on { opacity: 1; }
+.miniwin-restore { width: 24px; height: 24px; border-radius: 6px; border: 1px solid var(--border); background: var(--hover); color: var(--ink-3); cursor: pointer; display: none; align-items: center; justify-content: center; font: 700 12px var(--font); transition: background .14s, color .14s; }
+.miniwin-restore:hover { background: var(--hover-2); color: var(--ink); }
+.miniwin-section { padding: 12px 16px 15px; flex-shrink: 0; }
+.miniwin-section-label { display: flex; align-items: center; gap: 5px; margin-bottom: 7px; font-size: 9px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+.miniwin-section .miniwin-section-label { color: var(--kraft); }
+.miniwin-section-label::after { content: ''; flex: 1; height: 1px; border-radius: 1px; opacity: .2; background: currentColor; }
+.miniwin-text { font-size: 13.5px; line-height: 1.6; height: calc(3 * 1.6 * 13.5px); overflow-y: scroll; scrollbar-width: none; word-break: break-word; white-space: pre-wrap; color: var(--ink); }
+.miniwin-text::-webkit-scrollbar { display: none; }
+.miniwin-text.empty-ph { color: var(--ink-4) !important; font-style: italic; }
+body.mini-mode .sidebar, body.mini-mode .main { display: none !important; }
+body.mini-mode .miniwin { position: fixed !important; inset: 0 !important; width: auto !important; height: auto !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; background: var(--bg) !important; opacity: 1 !important; pointer-events: auto !important; transform: none !important; }
+body.mini-mode .miniwin-restore { display: flex; }
+body.mini-mode .miniwin-section { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+body.mini-mode .miniwin-text { height: auto; flex: 1; }
+
+/* ═══ Toast ═══ */
+.toast-box { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 9000; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
+.toast { padding: 10px 18px; border-radius: var(--r-sm); max-width: 360px; text-align: center; font: 500 13px var(--font); box-shadow: var(--s2); opacity: 0; transform: translateY(6px) scale(.97); transition: opacity .2s, transform .2s; }
+.toast.show { opacity: 1; transform: none; }
+.toast-info { background: #2C2C2A; color: #F5F4EE; }
+.toast-error { background: var(--danger); color: #fff; }
+.toast-ok { background: var(--ok); color: #fff; }
+.toast-warn { background: var(--warn); color: #2A1A10; }
+
+/* ═══ Responsive ═══ */
+@media (max-width: 860px) {
+  .sidebar { position: fixed; top: 0; left: 0; height: 100dvh; z-index: 400; box-shadow: var(--s3); }
+  .sidebar:not(.open) { box-shadow: none; }
+  .convo-col, .composer-box, .composer-hint { max-width: 100%; }
+}
+@media (max-width: 600px) {
+  .convo-col { padding: 18px 16px 32px; }
+  .hero { padding: 20px 0 8px; }
+  .hero-title { font-size: 25px; }
+  .composer { padding: 0 14px 16px; }
+  .composer-box { flex-wrap: wrap; }
+  .scene-wrap { flex: 1 1 100%; order: 2; }
+  .rec-btn { order: 1; }
+  .dock-status span { display: none; }
+  .miniwin { width: calc(100vw - 20px); right: 10px; bottom: 12px; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ═══ Persistent left sidebar (Claude-style) ═══ -->
+<aside class="sidebar open" id="sidebar">
+  <div class="sidebar-inner">
+    <div class="sb-head">
+      <div class="sb-brand">
+        <span class="sb-mark">✻</span>
+        <span class="sb-word">Transcription</span>
+      </div>
+      <button class="icon-btn active" id="railHistory" type="button" data-i18n-aria="toggleSidebar" aria-label="Toggle sidebar" onclick="toggleSidebar()">
+        <svg width="16" height="14" viewBox="0 0 16 14" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><line x1="1.5" y1="2" x2="14.5" y2="2"/><line x1="1.5" y1="7" x2="14.5" y2="7"/><line x1="1.5" y1="12" x2="14.5" y2="12"/></svg>
+      </button>
+    </div>
+
+    <button class="sb-new" type="button" onclick="createNew()">
+      <svg width="15" height="15" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><line x1="7" y1="1.5" x2="7" y2="12.5"/><line x1="1.5" y1="7" x2="12.5" y2="7"/></svg>
+      <span data-i18n="newSession">New session</span>
+    </button>
+
+    <input class="history-search" id="historySearch" type="search" data-i18n-ph="searchSessions" placeholder="Search sessions" oninput="queueHistorySearch(this.value)">
+
+    <div class="sb-recents-head">
+      <span data-i18n="recents">Recents</span>
+      <button class="history-clear" type="button" data-i18n="clearAll" onclick="clearAllSessions()">Clear all</button>
+    </div>
+    <div class="history-count" id="historyCount"></div>
+    <div class="history-scroll" id="historyList">
+      <div class="h-empty" data-i18n="emptyHistory">Nothing yet.</div>
+    </div>
+
+    <div class="balances" id="balances">
+      <div class="balance-row off" id="balDeepgram"><span>Deepgram</span><b>…</b></div>
+      <div class="balance-row off" id="balDeepseek"><span>DeepSeek</span><b>…</b></div>
+    </div>
+    <div class="sb-foot">
+      <div class="connection">
+        <div class="conn-dot connecting" id="connDot" title="Connecting…"></div>
+        <span id="connLabel">Connecting</span>
+      </div>
+      <div class="sb-foot-actions">
+        <button class="icon-btn" id="langToggle" type="button" data-i18n-aria="langToggleAria" aria-label="Switch interface language" onclick="toggleLang()">
+          <span id="langToggleLabel" style="font:700 11px var(--font); letter-spacing:.02em;">EN</span>
+          <span class="tooltip" data-i18n="langToggleAria">Switch interface language</span>
+        </button>
+        <button class="icon-btn" id="themeToggle" type="button" aria-label="Switch to light theme" aria-pressed="false" onclick="toggleTheme()">
+          <svg class="theme-icon theme-icon-sun" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="2.7"/><path d="M8 1.2v1.5M8 13.3v1.5M1.2 8h1.5M13.3 8h1.5M3.2 3.2l1.1 1.1M11.7 11.7l1.1 1.1M12.8 3.2l-1.1 1.1M4.3 11.7l-1.1 1.1"/></svg>
+          <svg class="theme-icon theme-icon-moon" width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13.4 10.4A5.8 5.8 0 0 1 5.6 2.6 5.9 5.9 0 1 0 13.4 10.4Z"/></svg>
+          <span class="tooltip" id="themeTooltip">Light theme</span>
+        </button>
+        <button class="icon-btn" id="railMini" type="button" data-i18n-aria="miniWindow" aria-label="Mini window" onclick="toggleMini()">
+          <svg width="16" height="14" viewBox="0 0 16 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1.5" width="14" height="11" rx="2.5"/><rect x="8" y="6.5" width="5.5" height="4" rx="1.2" fill="currentColor" stroke="none" opacity="0.7"/></svg>
+          <span class="tooltip" data-i18n="miniWindow">Mini window</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ Main · centered conversation ═══ -->
+<main class="main">
+  <div class="convo">
+    <div class="convo-col">
+      <div class="hero">
+        <div class="hero-mark">✻</div>
+        <h1 class="hero-title" data-i18n="heroTitle">Live transcription</h1>
+        <p class="hero-sub" data-i18n="heroSub">Speak and I'll turn your voice into text in real time. Hit record to begin.</p>
+      </div>
+
+      <div class="workspace" id="workspace">
+        <!-- Original -->
+        <section class="card card-source">
+          <div class="card-header">
+            <div class="card-title-row">
+              <span class="card-chip chip-transcript" data-i18n="original">Original</span>
+              <span class="card-meta" data-i18n="liveInput">Live input</span>
+            </div>
+            <button class="card-action" type="button" data-i18n="exportBtn" onclick="exportTranscript()">Export</button>
+          </div>
+          <div class="rec-badge" id="recBadge"><span class="rec-badge-dot"></span><span id="recBadgeText" data-i18n="listening">Listening now</span></div>
+          <div class="card-body empty" id="transcriptEl" contenteditable="true" data-i18n-dph="transcriptPh" data-ph="What are you hearing?"></div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Composer -->
+  <div class="composer">
+    <div class="composer-box">
+      <div class="scene-wrap">
+        <span class="scene-label" data-i18n="context">Course</span>
+        <input type="text" id="sceneInput" list="courseList" autocomplete="off" data-i18n-aria="sceneAria" aria-label="Course" data-i18n-ph="scenePh" placeholder="Course name, e.g. Data Security">
+        <datalist id="courseList"></datalist>
+      </div>
+      <button class="pill-toggle" id="termsBtn" type="button" onclick="openTerms()">Terms</button>
+      <button class="pill-toggle on" id="srcToggle" type="button" onclick="toggleSource()">Microphone</button>
+      <button class="pill-toggle" id="trToggle" type="button" data-i18n="trToggle" onclick="toggleTranslate()">Chinese</button>
+      <div class="level-wrap" id="levelWrap">
+        <div class="level-bar" id="lb0" style="height:4px"></div>
+        <div class="level-bar" id="lb1" style="height:7px"></div>
+        <div class="level-bar" id="lb2" style="height:11px"></div>
+        <div class="level-bar" id="lb3" style="height:7px"></div>
+        <div class="level-bar" id="lb4" style="height:4px"></div>
+      </div>
+      <button class="rec-btn" id="recBtn" type="button" onclick="toggleRecord()">
+        <span class="rec-dot"></span>
+        <span id="recLabel">Record</span>
+      </button>
+    </div>
+    <div class="composer-hint"><kbd>⌘K</kbd> <span data-i18n="composerHint">Quick controls · runs locally &amp; private</span></div>
+  </div>
+</main>
+
+
+<!-- Mini Window -->
+<div class="miniwin" id="miniwin">
+  <div class="miniwin-bar" id="miniwinBar">
+    <span class="miniwin-dot red"    onclick="toggleMini()"></span>
+    <span class="miniwin-dot yellow"></span>
+    <span class="miniwin-dot green"></span>
+    <span class="miniwin-bar-label" data-i18n="miniLive">Live</span>
+    <span class="miniwin-live" id="miniLive"></span>
+    <button class="miniwin-restore" id="miniRestoreBtn" type="button" data-i18n-aria="restoreAria" aria-label="Restore main window">↗</button>
+  </div>
+  <div class="miniwin-section">
+    <div class="miniwin-section-label" data-i18n="transcript">Transcript</div>
+    <div class="miniwin-text empty-ph" id="miniTx">Waiting for speech…</div>
+  </div>
+</div>
+
+<!-- Course terms -->
+<div class="modal-backdrop" id="termsBackdrop" onclick="if (event.target === this) closeTerms()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="termsTitle">
+    <h2 id="termsTitle"></h2>
+    <p data-i18n="termsHelp"></p>
+    <textarea id="termsText" spellcheck="false"></textarea>
+    <div class="modal-actions">
+      <button class="btn" id="termsImportBtn" type="button" data-i18n="termsImport" onclick="$('termsFile').click()">Import slides</button>
+      <input type="file" id="termsFile" accept=".pdf,.txt,.md" hidden onchange="importTerms(this)">
+      <span class="spacer"></span>
+      <button class="btn" type="button" data-i18n="cancel" onclick="closeTerms()">Cancel</button>
+      <button class="btn primary" type="button" data-i18n="save" onclick="saveTerms()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-box" id="toastBox"></div>
+
+<script>
+/* ─── Constants ─── */
+const API         = window.location.protocol.startsWith('http') ? window.location.origin : 'http://localhost:8081';
+const DEFAULT_SAMPLE_RATE = 16000;
+const CHUNK_SEC   = 0.10;
+const STOP_MS     = 130000; /* give-up point after Stop; normally the backend answers 'stopped' within a second */
+const OUTBOX_MAX  = 6000;   /* 10 min of unconfirmed audio */
+const SK = { source:'hh-source', translate:'hh-translate', recents:'hh-recents', historyMigrated:'hh-history-sqlite-migrated', scene:'hh-scene', cid:'hh-cid', theme:'hh-theme', lang:'hh-lang' };
+
+/* ─── AudioWorklet code — runs in dedicated audio thread, no main-thread blocking ─── */
+const WORKLET_SRC = `
+class PCMWorker extends AudioWorkletProcessor {
+  constructor(options) {
+    super();
+    this._outRate   = options.processorOptions.outRate;
+    this._chunkSize = options.processorOptions.chunkSize;
+    this._buf = [];
+    this.port.onmessage = e => {
+      if (e.data === 'flush' && this._buf.length > 0) {
+        const chunk = new Float32Array(this._buf.splice(0, this._buf.length));
+        this.port.postMessage(chunk, [chunk.buffer]);
+      }
+    };
+  }
+  process(inputs) {
+    const ch = inputs[0]?.[0];
+    if (!ch || !ch.length) return true;
+    if (sampleRate === this._outRate) {
+      for (let i = 0; i < ch.length; i++) this._buf.push(ch[i]);
+    } else {
+      const ratio  = sampleRate / this._outRate;
+      const outLen = Math.round(ch.length / ratio);
+      for (let i = 0; i < outLen; i++) {
+        const pos = i * ratio, a = Math.floor(pos), b = Math.min(a + 1, ch.length - 1);
+        this._buf.push(ch[a] + (pos - a) * (ch[b] - ch[a]));
+      }
+    }
+    while (this._buf.length >= this._chunkSize) {
+      const chunk = new Float32Array(this._buf.splice(0, this._chunkSize));
+      this.port.postMessage(chunk, [chunk.buffer]);
+    }
+    return true;
+  }
+}
+registerProcessor('pcm-worker', PCMWorker);
+`;
+
+/* ─── State ─── */
+let sttWs, stream, ctx;
+let srcNode, gainNode, procNode, silentNode;
+let pcmBuf     = [];
+let sttSampleRate = DEFAULT_SAMPLE_RATE;
+let finalTx    = '';
+let isRec      = false, stopPending  = false;
+let connStatus = 'connecting';
+let sid        = null,  menuOpen     = null;
+let activeSessionTitle = '', historyRows = [], historyTotal = 0, historyNextNumber = 1, historySearchTimer = null;
+let historySaveChain = Promise.resolve();
+let sidebarOpen = true;
+let wakeLock   = null;
+let miniVisible = false, miniDragging = false, miniDX = 0, miniDY = 0;
+let useWorklet  = false;
+let sttPing    = null;
+let recId = null, seqNo = 0, outbox = [], sentSeq = -1, sttReady = false;
+let reconnectDelay = 500, reconnectTimer = null, stopTimer = null, sttInterrupted = false;
+/* Sentence rows. segs[i] = { en, zh, final, failed }; segBase maps the backend's per-recording ids onto this list. */
+let segs = [], segEls = [], tailEl = null, segBase = 0, tailText = '', latestSeg = -1;
+let followLatest = true, userScrollAt = 0, typeFrame = 0, typeLastAt = 0;
+const typing = new Set();   /* rows whose Chinese is still being typed out */
+let translateOn = localStorage.getItem(SK.translate) !== '0', translationReady = false, persistTimer = null;
+let audioSource = localStorage.getItem(SK.source) === 'system' ? 'system' : 'mic';
+let pipWin     = null, pipTxEl = null, pipLiveEl = null;
+
+const $ = id => document.getElementById(id);
+
+/* ─── i18n: 界面语言(中/英)。默认按电脑语言自动选择,可手动切换并记住 ─────────── */
+const I18N = {
+  en: {
+    newSession: 'New session', searchSessions: 'Search sessions', recents: 'Recents', clearAll: 'Clear all',
+    emptyHistory: 'Nothing yet.', historyUnavailable: 'History unavailable.', historyCount: '{n} shown / {total} found',
+    toggleSidebar: 'Toggle sidebar', miniWindow: 'Mini window',
+    langToggleAria: 'Switch interface language',
+    heroTitle: 'Live transcription',
+    heroSub: "Speak and I'll turn your voice into text in real time. Hit record to begin.",
+    original: 'Original', liveInput: 'Live input', listening: 'Listening now', transcriptPh: 'What are you hearing?',
+    context: 'Course', sceneAria: 'Course', scenePh: 'Course name, e.g. Data Security',
+    record: 'Record', stop: 'Stop', composerHint: 'Quick controls · Deepgram transcription',
+    miniLive: 'Live', restoreAria: 'Restore main window', transcript: 'Transcript', miniTxPh: 'Waiting for speech…',
+    rename: 'Rename', delete: 'Delete', untitled: 'Untitled',
+    connConnecting: 'Connecting', connReady: 'Ready', connReconnecting: 'Reconnecting',
+    connTipConnected: 'Connected', connTipOff: 'Disconnected — retrying…', connTipConnecting: 'Connecting…',
+    themeToLight: 'Light theme', themeToDark: 'Dark theme',
+    themeAriaToLight: 'Switch to light theme', themeAriaToDark: 'Switch to dark theme',
+    sttReconnecting: 'Connection lost — still recording, audio is being kept', sttStopped: 'STT disconnected, recording stopped',
+    sttBuffering: 'Reconnecting · {s}s kept', sttRecovered: 'Reconnected — nothing was lost',
+    sttTailLost: 'Could not reach the server, the last {s}s were not transcribed', sttStillSaving: 'Still saving the previous recording…',
+    audioEnded: 'The audio source stopped. Press Stop, then Record again.',
+    trToggle: '中文 translation', trFailed: '(translation failed)', trError: 'DeepSeek error: {m}',
+    trNoKey: 'DeepSeek key is not set — translation is off. Add DEEPSEEK_API_KEY to .env.',
+    exportBtn: 'Export', exportEmpty: 'Nothing to export yet.', stopFirst: 'Stop the recording first.',
+    balNoKey: 'no key', balNoPerm: 'key cannot read balance', balErr: 'unavailable',
+    srcMic: 'Microphone', srcSystem: 'Computer audio',
+    sysNoAudio: 'No sound was shared. In the share window choose “Entire screen” (or the tab that is playing) and switch on “Also share system audio”.',
+    sysDenied: 'Sharing was cancelled or blocked. If no window appeared: System Settings → Privacy & Security → Screen & System Audio Recording → allow Google Chrome.',
+    sysUnsupported: 'This browser cannot capture computer audio. Use Google Chrome.', sysEnded: 'Sharing ended, recording stopped.',
+    termsBtn: 'Terms {n}', termsTitle: 'Terms — {c}', termsNeedCourse: 'Type a course name first.',
+    termsHelp: 'One term per line. They help recognition and translation for this course. New ones are learned automatically after each recording; you can also import the slides (PDF or text).',
+    termsImport: 'Import slides', termsImporting: 'Reading…', termsSaved: 'Terms saved.', termsImported: '{n} terms in the list now.',
+    cancel: 'Cancel', save: 'Save', trWaiting: 'translating…', balLow: '{n} balance is running low.',
+    historyDeleted: 'All history deleted.',
+    pipNeedsChrome: 'Picture-in-Picture needs Chrome 116+', confirmClearAll: 'Delete all saved history permanently? This cannot be undone.',
+    errTranscription: 'Transcription error.', errMic: 'Microphone error.',
+    errMigrate: 'Could not migrate existing history.', errLoadHistory: 'Failed to load history.',
+    errRename: 'Failed to rename session.', errDelete: 'Failed to delete session.',
+    errClearHistory: 'Failed to clear history.', errSave: 'Failed to save session.', errOpen: 'Failed to open session.',
+    errGeneric: 'Error.', sttConnFailed: 'STT connection failed.'
+  },
+  zh: {
+    newSession: '新建会话', searchSessions: '搜索会话', recents: '最近', clearAll: '清空',
+    emptyHistory: '还没有记录', historyUnavailable: '历史记录不可用', historyCount: '显示 {n} / 共 {total}',
+    toggleSidebar: '切换侧栏', miniWindow: '迷你窗口',
+    langToggleAria: '切换界面语言',
+    heroTitle: '实时转录', heroSub: '开口说话，我会实时把语音转成文字。点击录音开始。',
+    original: '原文', liveInput: '实时输入', listening: '正在聆听', transcriptPh: '你听到了什么?',
+    context: '课程', sceneAria: '课程', scenePh: '课程名,例如 Data Security',
+    record: '录音', stop: '停止', composerHint: '快捷控制 · Deepgram 转录',
+    miniLive: '实时', restoreAria: '还原主窗口', transcript: '转录', miniTxPh: '等待语音…',
+    rename: '重命名', delete: '删除', untitled: '未命名',
+    connConnecting: '连接中', connReady: '就绪', connReconnecting: '重连中',
+    connTipConnected: '已连接', connTipOff: '已断开,正在重试…', connTipConnecting: '连接中…',
+    themeToLight: '浅色主题', themeToDark: '深色主题',
+    themeAriaToLight: '切换到浅色主题', themeAriaToDark: '切换到深色主题',
+    sttReconnecting: '连接断开 — 仍在录音,声音已暂存', sttStopped: 'STT 断线,录音已停止',
+    sttBuffering: '重连中 · 已暂存 {s} 秒', sttRecovered: '已重新连接 — 内容没有丢失',
+    sttTailLost: '连不上服务器,最后 {s} 秒没有转写', sttStillSaving: '上一段录音还在保存…',
+    audioEnded: '声音来源已中断。请先停止,再重新开始录音。',
+    trToggle: '中文翻译', trFailed: '(翻译失败)', trError: 'DeepSeek 报错:{m}',
+    trNoKey: '还没有设置 DeepSeek key,翻译已关闭。请在 .env 里加上 DEEPSEEK_API_KEY。',
+    exportBtn: '导出', exportEmpty: '还没有内容可以导出。', stopFirst: '请先停止录音。',
+    balNoKey: '未设置 key', balNoPerm: 'key 无权查看余额', balErr: '查不到',
+    srcMic: '麦克风', srcSystem: '电脑声音',
+    sysNoAudio: '没有拿到声音。请在弹出的共享窗口里选「整个屏幕」(或正在播放的标签页),并打开「同时共享系统音频」。',
+    sysDenied: '共享被取消或被拦截。如果没有弹出窗口:系统设置 → 隐私与安全性 → 屏幕与系统录音 → 允许 Google Chrome。',
+    sysUnsupported: '这个浏览器不能采集电脑声音,请用 Google Chrome。', sysEnded: '共享已结束,录音已停止。',
+    termsBtn: '术语 {n}', termsTitle: '术语表 — {c}', termsNeedCourse: '请先填课程名。',
+    termsHelp: '每行一个术语,用来帮这门课的识别和翻译。每次录完会自动学新的;也可以导入课件(PDF 或文本)。',
+    termsImport: '导入课件', termsImporting: '读取中…', termsSaved: '术语已保存。', termsImported: '现在共有 {n} 个术语。',
+    cancel: '取消', save: '保存', trWaiting: '翻译中…', balLow: '{n} 余额快用完了。',
+    historyDeleted: '已删除全部历史。',
+    pipNeedsChrome: '置顶悬浮窗需要 Chrome 116+ 浏览器', confirmClearAll: '永久删除全部历史记录?此操作无法撤销。',
+    errTranscription: '转录出错。', errMic: '麦克风出错。',
+    errMigrate: '无法迁移已有历史。', errLoadHistory: '加载历史失败。',
+    errRename: '重命名会话失败。', errDelete: '删除会话失败。',
+    errClearHistory: '清空历史失败。', errSave: '保存会话失败。', errOpen: '打开会话失败。',
+    errGeneric: '出错了。', sttConnFailed: 'STT 连接失败。'
+  }
+};
+function detectLang() {
+  const saved = localStorage.getItem(SK.lang);
+  if (saved === 'zh' || saved === 'en') return saved;
+  return /^zh\b|-?zh/i.test(navigator.language || '') || /^zh/i.test((navigator.languages || [''])[0] || '') ? 'zh' : 'en';
+}
+let LANG = detectLang();
+function t(key, params) {
+  let s = (I18N[LANG] && I18N[LANG][key] != null) ? I18N[LANG][key] : (I18N.en[key] != null ? I18N.en[key] : key);
+  if (params) for (const k in params) s = String(s).split('{' + k + '}').join(params[k]);
+  return s;
+}
+function applyLang() {
+  document.documentElement.lang = LANG === 'zh' ? 'zh-CN' : 'en';
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.dataset.i18nHtml); });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { el.setAttribute('placeholder', t(el.dataset.i18nPh)); });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
+  document.querySelectorAll('[data-i18n-dph]').forEach(el => { el.setAttribute('data-ph', t(el.dataset.i18nDph)); });
+  const lbl = $('langToggleLabel'); if (lbl) lbl.textContent = LANG === 'zh' ? '中' : 'EN';
+  refreshDynamicI18n();
+}
+function toggleLang() {
+  LANG = LANG === 'zh' ? 'en' : 'zh';
+  localStorage.setItem(SK.lang, LANG);
+  applyLang();
+}
+/* re-apply strings that JS controls based on current state */
+function refreshDynamicI18n() {
+  setConnStatus(connStatus);
+  applyTheme(document.body.classList.contains('theme-light') ? 'light' : 'dark', false);
+  const rl = $('recLabel'); if (rl) rl.textContent = isRec ? t('stop') : t('record');
+  if (Array.isArray(historyRows)) renderHistory();
+  paintSource();
+  $('termsBtn').textContent = t('termsBtn', { n: courseTermCount || '' }).trim();
+  const mx = $('miniTx'); if (mx && mx.classList.contains('empty-ph')) mx.textContent = t('miniTxPh');
+}
+
+/* ─── Toast ─── */
+function toast(msg, type = 'info', dur = 3500) {
+  const el = document.createElement('div');
+  el.className  = `toast toast-${type}`;
+  el.textContent = msg;
+  $('toastBox').appendChild(el);
+  requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('show')));
+  setTimeout(() => {
+    el.classList.remove('show');
+    el.addEventListener('transitionend', () => el.remove(), { once: true });
+  }, dur);
+}
+
+/* ─── Connection dot ─── */
+/* The badge above the transcript mirrors connection trouble, because that is where the reader looks. */
+function setRecBadge(warnText) {
+  $('recBadge').classList.toggle('warn', !!warnText);
+  $('recBadgeText').textContent = warnText || t('listening');
+}
+
+function setConnStatus(s, labelText) {
+  if (isRec || stopPending) setRecBadge(s === 'off' ? (labelText || t('connReconnecting')) : '');
+  connStatus = s;
+  const d = $('connDot');
+  d.className = 'conn-dot ' + s;
+  d.title = { ok: t('connTipConnected'), off: t('connTipOff'), connecting: t('connTipConnecting') }[s] || '';
+  const label = $('connLabel');
+  if (label) label.textContent = labelText || { ok: t('connReady'), off: t('connReconnecting'), connecting: t('connConnecting') }[s] || '';
+}
+
+/* ─── Sidebar ─── */
+function toggleSidebar() {
+  sidebarOpen = !sidebarOpen;
+  $('sidebar').classList.toggle('open', sidebarOpen);
+  $('railHistory').classList.toggle('active', sidebarOpen);
+}
+
+/* ─── Rec UI ─── */
+function setRecUI(on) {
+  $('srcToggle').disabled = on;
+  if (on) setRecBadge('');
+  $('recBtn').classList.toggle('active', on);
+  $('recLabel').textContent = on ? t('stop') : t('record');
+  $('transcriptEl').contentEditable = on || rowsMode() ? 'false' : 'true';
+  $('recBadge').classList.toggle('show', on);
+  $('levelWrap').classList.toggle('show', on);
+  $('miniLive').classList.toggle('on', on);
+  if (!on) BARS.forEach(b => { b.style.height = '3px'; });
+}
+
+/* ─── Level meter ─── */
+const BARS     = [0,1,2,3,4].map(i => $('lb' + i));
+const BAR_MAX  = [14, 22, 30, 22, 14];
+function updateLevel(rv) {
+  const level = Math.min(1, rv / 0.08);
+  BARS.forEach((b, i) => {
+    const h = 3 + Math.round(level * BAR_MAX[i] * (0.5 + 0.5 * Math.random()));
+    b.style.height = h + 'px';
+  });
+}
+
+/* ─── Wake Lock ─── */
+async function acquireWakeLock() {
+  if (!('wakeLock' in navigator)) return;
+  try { wakeLock = await navigator.wakeLock.request('screen'); } catch(e) {}
+}
+function releaseWakeLock() { if (wakeLock) { wakeLock.release(); wakeLock = null; } }
+
+/* ─── Audio helpers ─── */
+function b64(bytes) {
+  let s = '';
+  for (let i = 0; i < bytes.length; i += 0x8000)
+    s += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(s);
+}
+function rmsOf(buf) { let s = 0; for (let i = 0; i < buf.length; i++) s += buf[i] * buf[i]; return buf.length ? Math.sqrt(s / buf.length) : 0; }
+function f32i16(buf) {
+  const out = new Int16Array(buf.length);
+  for (let i = 0; i < buf.length; i++) { const s = Math.max(-1, Math.min(1, buf[i])); out[i] = s < 0 ? s * 0x8000 : s * 0x7FFF; }
+  return out;
+}
+/* Fallback downsampler — only used when AudioWorklet is unavailable */
+function downsample(buf, inR, outR) {
+  if (inR === outR) return Float32Array.from(buf);
+  const ratio = inR / outR, len = Math.max(1, Math.round(buf.length / ratio)), out = new Float32Array(len);
+  let off = 0;
+  for (let i = 0; i < len; i++) {
+    const nx = Math.min(buf.length, Math.round((i + 1) * ratio));
+    let sum = 0, cnt = 0;
+    for (let j = off; j < nx; j++) { sum += buf[j]; cnt++; }
+    out[i] = cnt ? sum / cnt : 0; off = nx;
+  }
+  return out;
+}
+
+function killAudio() {
+  if (procNode) {
+    if (procNode.port) procNode.port.onmessage = null;
+    else              procNode.onaudioprocess  = null;
+    procNode.disconnect(); procNode = null;
+  }
+  if (silentNode) { silentNode.disconnect(); silentNode = null; }
+  if (gainNode)   { gainNode.disconnect();   gainNode   = null; }
+  if (srcNode)    { srcNode.disconnect();    srcNode    = null; }
+  if (stream)     { stream.getTracks().forEach(t => t.stop()); stream = null; }
+  if (ctx)        { ctx.close().catch(() => {}); ctx = null; }
+  pcmBuf = [];
+}
+
+/* Audio stays in the outbox until the backend confirms it is transcribed, so a dropped
+   connection (or a backend restart) is replayed instead of lost. */
+function sendChunk(chunk) {
+  updateLevel(rmsOf(chunk));
+  const pcm = f32i16(chunk);
+  outbox.push({ seq: seqNo++, samples: b64(new Uint8Array(pcm.buffer)) });
+  if (outbox.length > OUTBOX_MAX) outbox.shift();
+  flushOutbox();
+}
+
+function flushOutbox() {
+  if (!sttReady || sttWs?.readyState !== 1) return;
+  for (const c of outbox) {
+    if (c.seq <= sentSeq) continue;
+    sttWs.send(JSON.stringify({ type: 'audio', seq: c.seq, samples: c.samples }));
+    sentSeq = c.seq;
+  }
+}
+
+/* Computer audio comes through screen sharing: Chrome only hands out system sound together with a
+   screen, window or tab. The picture is ignored. */
+async function captureSystemAudio() {
+  if (!navigator.mediaDevices?.getDisplayMedia) throw new Error(t('sysUnsupported'));
+  const audio = { echoCancellation: false, noiseSuppression: false, autoGainControl: false, suppressLocalAudioPlayback: false };
+  let display;
+  try {
+    display = await navigator.mediaDevices.getDisplayMedia({
+      video: { frameRate: 1 }, audio,
+      systemAudio: 'include', windowAudio: 'system', selfBrowserSurface: 'exclude', monitorTypeSurfaces: 'include'
+    });
+  } catch (e) {
+    if (e.name !== 'TypeError') throw e;   /* an older Chrome that does not know one of the hints */
+    display = await navigator.mediaDevices.getDisplayMedia({ video: true, audio });
+  }
+  if (!display.getAudioTracks().length) {
+    display.getTracks().forEach(tr => tr.stop());
+    throw new Error(t('sysNoAudio'));
+  }
+  return display;
+}
+
+async function startAudio() {
+  /* Ask for the audio first: the share picker needs the click that started this to still be fresh. */
+  if (audioSource === 'system') {
+    stream = await captureSystemAudio();
+  } else {
+    /* Keep Chrome's voice processing on. Turning noise suppression and echo cancellation off (as
+       Deepgram's docs suggest) left the MacBook mic so quiet that Deepgram barely heard anyone. */
+    stream = await navigator.mediaDevices.getUserMedia({
+      audio: { channelCount: 1, sampleRate: sttSampleRate,
+               noiseSuppression: true, echoCancellation: true, autoGainControl: true }
+    });
+  }
+  await connectStt();
+  if (stream.getAudioTracks().some(tr => tr.readyState === 'ended')) throw new Error(t(audioSource === 'system' ? 'sysEnded' : 'audioEnded'));
+
+  ctx = new (window.AudioContext || window.webkitAudioContext)();
+  await ctx.resume();
+  ctx.onstatechange = () => { if (isRec && ctx && ctx.state !== 'running') ctx.resume().catch(() => {}); };
+  stream.getTracks().forEach(tr => { tr.onended = () => {
+    if (!isRec) return;
+    if (audioSource === 'system') { toggleRecord(); toast(t('sysEnded'), 'warn', 5000); }
+    else toast(t('audioEnded'), 'error', 8000);
+  }; });
+
+  srcNode  = ctx.createMediaStreamSource(new MediaStream(stream.getAudioTracks()));
+  gainNode = ctx.createGain(); gainNode.gain.value = audioSource === 'system' ? 1 : 1.2;
+  srcNode.connect(gainNode);
+
+  const chunkSize = Math.round(sttSampleRate * CHUNK_SEC);
+  useWorklet = false;
+
+  /* ── AudioWorklet path (smooth, runs in dedicated thread) ── */
+  if (ctx.audioWorklet) {
+    try {
+      const blob = new Blob([WORKLET_SRC], { type: 'application/javascript' });
+      const url  = URL.createObjectURL(blob);
+      await ctx.audioWorklet.addModule(url);
+      URL.revokeObjectURL(url);
+
+      procNode = new AudioWorkletNode(ctx, 'pcm-worker', {
+        processorOptions: { outRate: sttSampleRate, chunkSize }
+      });
+      procNode.port.onmessage = e => { if (isRec) sendChunk(e.data); };
+
+      /* Route through a silent gain to keep the graph active */
+      silentNode = ctx.createGain(); silentNode.gain.value = 0;
+      gainNode.connect(procNode);
+      procNode.connect(silentNode);
+      silentNode.connect(ctx.destination);
+      useWorklet = true;
+      return;
+    } catch(err) {
+      console.warn('[audio] AudioWorklet unavailable, falling back to ScriptProcessor:', err);
+    }
+  }
+
+  /* ── ScriptProcessor fallback ── */
+  procNode   = ctx.createScriptProcessor(4096, 1, 1);
+  silentNode = ctx.createGain(); silentNode.gain.value = 0;
+  procNode.onaudioprocess = e => {
+    if (!isRec) return;
+    const raw = e.inputBuffer.getChannelData(0);
+    const red = downsample(raw, ctx.sampleRate, sttSampleRate);
+    for (let i = 0; i < red.length; i++) pcmBuf.push(red[i]);
+    while (pcmBuf.length >= chunkSize) sendChunk(new Float32Array(pcmBuf.splice(0, chunkSize)));
+  };
+  gainNode.connect(procNode);
+  procNode.connect(silentNode);
+  silentNode.connect(ctx.destination);
+}
+
+function stopAudio() {
+  stopPending = true;
+  if (useWorklet && procNode?.port) {
+    procNode.port.postMessage('flush');
+    setTimeout(_finishStop, 80);
+  } else {
+    if (pcmBuf.length) { sendChunk(new Float32Array(pcmBuf)); pcmBuf = []; }
+    _finishStop();
+  }
+}
+
+/* Stop is only finished when the backend answers 'stopped'. If the connection is down right now,
+   stay in stopPending and keep reconnecting so the buffered tail still gets transcribed. */
+function _finishStop() {
+  killAudio(); releaseWakeLock();
+  clearTimeout(stopTimer);
+  stopTimer = setTimeout(() => {
+    if (!stopPending) return;
+    stopPending = false; clearTimeout(reconnectTimer);
+    if (outbox.length) toast(t('sttTailLost', { s: Math.round(outbox.length * CHUNK_SEC) }), 'warn', 6000);
+    outbox = [];
+    if (sttWs) sttWs.close(); else pollHealth();
+  }, STOP_MS);
+  if (sttReady && sttWs?.readyState === 1) {
+    flushOutbox();
+    sttWs.send(JSON.stringify({ type: 'stop' }));
+  } else if (!sttWs) {
+    connectStt().catch(() => {});
+  }
+}
+
+/* ─── STT WebSocket ─── */
+function sttMsg(data) {
+  if (!data?.event) return;
+  if (data.event === 'status') {
+    if (data.state === 'live') {
+      setConnStatus('ok');
+      if (sttInterrupted) { sttInterrupted = false; toast(t('sttRecovered'), 'ok', 2500); }
+    } else {
+      setConnStatus('off', t('sttBuffering', { s: Math.round(data.buffered_seconds || 0) }));
+      if (!sttInterrupted) { sttInterrupted = true; toast(t('sttReconnecting'), 'warn', 4000); }
+    }
+    return;
+  }
+  if (data.event === 'sentence') {
+    const i = segBase + data.id;
+    const prev = segs[i];
+    segs[i] = { en: data.en, zh: data.zh || '', final: !!data.final, failed: false, wait: translating() && !data.zh,
+                shown: prev && prev.zh === (data.zh || '') ? prev.shown : undefined };
+    renderRows(i);
+    if (data.final) persistSoon();
+    return;
+  }
+  if (data.event === 'translation') {
+    const s = segs[segBase + data.id]; if (!s) return;
+    s.zh = data.zh; s.failed = !!data.failed; if (data.done) s.wait = false;
+    renderRows(segBase + data.id);
+    if (data.done) persistSoon();
+    if (data.message) toast(t('trError', { m: data.message }), 'error', 8000);
+    return;
+  }
+  if (data.event === 'tail') { tailText = data.tail_text || ''; if (rowsMode()) renderRows(-1); return; }
+  if (typeof data.tail_text === 'string') tailText = data.tail_text;
+  if (data.event === 'partial') {
+    const committedText = data.committed_text || finalTx;
+    const previewText = (data.preview_text || data.delta_text || '').trim();
+    const displayText = (data.display_text || previewText || committedText).trim();
+    renderTx(displayText, true, committedText); /* muted — preview only */
+    return;
+  }
+  if (data.event === 'final' || data.event === 'stopped') {
+    finalTx = data.committed_text || finalTx;
+    if (data.event === 'stopped') tailText = '';
+    renderTx(data.display_text || finalTx, false, finalTx);
+    if (data.event === 'stopped') persist(); else persistSoon();
+    if (data.message) toast(data.message, 'warn', 4500);
+    if (data.event === 'stopped') {
+      clearTimeout(stopTimer); stopPending = false; outbox = [];
+      /* The backend learns this recording's terms right after it stops. */
+      setTimeout(() => { refreshCourse(); refreshCourseList(); refreshBalances(); }, 8000);
+      setRecUI(false);
+      if (sttWs?.readyState === 1) sttWs.close();
+    }
+    return;
+  }
+  if (data.event === 'error') {
+    if (data.committed_text) finalTx = data.committed_text;
+    renderTx(finalTx, false, finalTx);
+    stopPending = false; isRec = false; killAudio(); setRecUI(false); releaseWakeLock();
+    if (sttWs?.readyState === 1) sttWs.close();
+    persist();
+    toast(data.message || t('errTranscription'), 'error');
+  }
+}
+
+function connectStt() {
+  if (sttWs?.readyState <= 1) return Promise.resolve();
+  return new Promise((res, rej) => {
+    let done = false;
+    setConnStatus('connecting');
+    /* Handlers are bound to this socket; a late event from an old one must not touch its successor. */
+    const ws = sttWs = new WebSocket(`${API.replace(/^http/, 'ws')}/ws-stt?client_id=${encodeURIComponent(cid())}`);
+
+    /* A socket that opens but never answers would otherwise leave Record waiting forever. */
+    setTimeout(() => { if (!done) ws.close(); }, 8000);
+
+    ws.onopen = () => {
+      setConnStatus('ok');
+      ws.send(JSON.stringify({
+        type: 'config',
+        rec_id: recId,
+        scene: $('sceneInput').value,
+        translate: translating(),
+        committed_text: finalTx
+      }));
+      clearInterval(sttPing);
+      sttPing = setInterval(() => {
+        if (ws.readyState === 1) try { ws.send(JSON.stringify({ type: 'ping' })); } catch(e) {}
+      }, 20000);
+    };
+
+    ws.onmessage = e => {
+      if (sttWs !== ws) return;
+      const d = JSON.parse(e.data);
+      if (d.event === 'ready' && Number.isFinite(+d.sample_rate) && +d.sample_rate > 0) sttSampleRate = +d.sample_rate;
+      if (Number.isInteger(d.ack)) while (outbox.length && outbox[0].seq <= d.ack) outbox.shift();
+      if (d.event === 'configured') {
+        if (typeof d.committed_text === 'string') finalTx = d.committed_text;
+        /* A resumed session already holds everything up to next_seq; a fresh one (new recording,
+           or the backend restarted) needs the whole outbox again. */
+        sentSeq = d.resumed ? d.next_seq - 1 : (outbox.length ? outbox[0].seq - 1 : seqNo - 1);
+        sttReady = true; reconnectDelay = 500;
+        if (d.resumed) {
+          /* Sentence events sent while this page was disconnected never arrived; take the backend's list. */
+          segs.length = segBase;
+          (d.units || []).forEach(u => { segs[segBase + u.id] = { en: u.en, zh: u.zh || '', final: !!u.final }; });
+        } else {
+          /* New backend session: its sentence ids start again at 0, and rows it never confirmed will be
+             re-sent. Finished text that was not yet cut into a sentence gets a row of its own. */
+          while (segs.length > segBase && !segs[segs.length - 1].final) segs.pop();
+          const rest = uncoveredText();
+          if (rest) segs.push({ en: rest, zh: '', final: true });
+          segBase = segs.length;
+        }
+        tailEl = null; tailText = d.tail_text || '';
+        if (isRec || stopPending) renderTx(finalTx, false, finalTx);
+        flushOutbox();
+        if (stopPending) ws.send(JSON.stringify({ type: 'stop' }));
+      }
+      sttMsg(d);
+      if (!done && d.event === 'ready' && d.stt_ready === false) {
+        done = true;
+        if (isRec) { isRec = false; killAudio(); setRecUI(false); releaseWakeLock(); }
+        ws.close(); return rej(new Error('STT API key missing — check server config.'));
+      }
+      if (!done && d.event === 'configured') { done = true; res(); }
+    };
+
+    ws.onerror = () => { if (sttWs !== ws) return; setConnStatus('off'); if (!done) { done = true; rej(new Error(t('sttConnFailed'))); } };
+
+    ws.onclose = () => {
+      if (!done) { done = true; rej(new Error(t('sttConnFailed'))); }
+      if (sttWs !== ws) return;
+      clearInterval(sttPing); sttPing = null;
+      sttWs = null; sttReady = false;
+      if (isRec || stopPending) {
+        /* Lost the backend mid-recording: keep recording into the outbox and retry until it is back. */
+        setConnStatus('off', t('sttBuffering', { s: Math.round(outbox.length * CHUNK_SEC) }));
+        if (!sttInterrupted) { sttInterrupted = true; toast(t('sttReconnecting'), 'warn', 4000); }
+        clearTimeout(reconnectTimer);
+        reconnectTimer = setTimeout(() => { if (isRec || stopPending) connectStt().catch(() => {}); }, reconnectDelay);
+        reconnectDelay = Math.min(reconnectDelay * 2, 5000);
+      } else {
+        setRecUI(false);
+        pollHealth();
+      }
+    };
+  });
+}
+
+async function toggleRecord() {
+  if (!isRec) {
+    if (stopPending) { toast(t('sttStillSaving'), 'warn', 2500); return; }
+    try {
+      finalTx = getTxcript();
+      recId = `r-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+      seqNo = 0; outbox = []; sentSeq = -1; reconnectDelay = 500; sttInterrupted = false;
+      /* Text typed or recorded before sentence rows existed becomes one row, so nothing vanishes from view. */
+      if (!segs.length && finalTx) segs = [{ en: finalTx, zh: '', final: true }];
+      segBase = segs.length; tailText = ''; followLatest = true;
+      if (translateOn && !translationReady) toast(t('trNoKey'), 'warn', 7000);
+      if (lowBalance) toast(t('balLow', { n: lowBalance }), 'warn', 7000);
+      await acquireWakeLock();
+      await startAudio();
+      isRec = true; stopPending = false; setRecUI(true);
+    } catch(e) {
+      isRec = false; killAudio(); setRecUI(false); releaseWakeLock();
+      if (sttWs) sttWs.close();
+      const denied = e.name === 'NotAllowedError';
+      toast(denied ? t(audioSource === 'system' ? 'sysDenied' : 'errMic') : (e.message || t('errMic')), 'error', denied || audioSource === 'system' ? 9000 : 3500);
+    }
+  } else {
+    isRec = false; stopAudio(); setRecUI(false); persist();
+  }
+}
+
+/* ─── Translation toggle ─── */
+function translating() { return translateOn && translationReady; }
+function paintTranslateToggle() {
+  $('trToggle').classList.toggle('on', translating());
+  $('trToggle').setAttribute('aria-pressed', String(translating()));
+}
+function toggleTranslate() {
+  if (!translationReady) { toast(t('trNoKey'), 'warn', 7000); return; }
+  translateOn = !translateOn;
+  localStorage.setItem(SK.translate, translateOn ? '1' : '0');
+  paintTranslateToggle();
+  /* Takes effect at once: the backend reads the flag from the next config message. */
+  if (isRec && sttReady && sttWs?.readyState === 1) {
+    sttWs.send(JSON.stringify({ type: 'config', rec_id: recId, scene: $('sceneInput').value, translate: translating(), committed_text: finalTx }));
+  }
+}
+
+/* ─── Audio source ─── */
+function paintSource() {
+  $('srcToggle').textContent = t(audioSource === 'system' ? 'srcSystem' : 'srcMic');
+  $('srcToggle').disabled = isRec;
+}
+function toggleSource() {
+  if (isRec) return;
+  audioSource = audioSource === 'system' ? 'mic' : 'system';
+  localStorage.setItem(SK.source, audioSource);
+  paintSource();
+}
+
+/* ─── Course terms ─── */
+let courseTermCount = 0;
+function courseName() { return ($('sceneInput').value || '').trim(); }
+async function refreshCourse() {
+  const course = courseName();
+  try {
+    courseTermCount = course ? (await apiFetch(`/course-terms?course=${encodeURIComponent(course)}`)).terms.length : 0;
+  } catch (e) { courseTermCount = 0; }
+  $('termsBtn').textContent = t('termsBtn', { n: courseTermCount || '' }).trim();
+  $('termsBtn').classList.toggle('on', courseTermCount > 0);
+}
+async function refreshCourseList() {
+  try {
+    const { courses } = await apiFetch('/courses');
+    $('courseList').innerHTML = courses.map(c => `<option value="${esc(c).replace(/"/g, '&quot;')}">`).join('');
+  } catch (e) {}
+}
+async function openTerms() {
+  const course = courseName();
+  if (!course) { toast(t('termsNeedCourse'), 'warn', 2500); $('sceneInput').focus(); return; }
+  try {
+    const { terms } = await apiFetch(`/course-terms?course=${encodeURIComponent(course)}`);
+    $('termsTitle').textContent = t('termsTitle', { c: course });
+    $('termsText').value = terms.map(x => x.term).join('\n');
+    $('termsBackdrop').classList.add('open');
+  } catch (e) { toast(e.message || t('errGeneric'), 'error'); }
+}
+function closeTerms() { $('termsBackdrop').classList.remove('open'); }
+async function saveTerms() {
+  try {
+    await apiFetch('/course-terms', { method: 'PUT', body: JSON.stringify({ course: courseName(), terms: $('termsText').value.split('\n') }) });
+    closeTerms(); toast(t('termsSaved'), 'ok', 2000);
+    refreshCourse(); refreshCourseList();
+  } catch (e) { toast(e.message || t('errGeneric'), 'error'); }
+}
+async function importTerms(input) {
+  const file = input.files[0]; input.value = '';
+  if (!file) return;
+  const btn = $('termsImportBtn'); btn.disabled = true; btn.textContent = t('termsImporting');
+  try {
+    /* Save what is in the box first so the import adds to it instead of racing it. */
+    await apiFetch('/course-terms', { method: 'PUT', body: JSON.stringify({ course: courseName(), terms: $('termsText').value.split('\n') }) });
+    const { terms } = await apiFetch(`/course-terms/import?course=${encodeURIComponent(courseName())}&filename=${encodeURIComponent(file.name)}`,
+      { method: 'POST', body: file, headers: { 'Content-Type': 'application/octet-stream' } });
+    $('termsText').value = terms.map(x => x.term).join('\n');
+    toast(t('termsImported', { n: terms.length }), 'ok', 3000);
+    refreshCourse(); refreshCourseList();
+  } catch (e) { toast(e.message || t('errGeneric'), 'error', 7000); }
+  finally { btn.disabled = false; btn.textContent = t('termsImport'); }
+}
+
+/* ─── Balances ─── */
+function paintBalance(id, info, symbol, lowBelow) {
+  const row = $(id), value = row.querySelector('b');
+  row.className = 'balance-row' + (!info?.ok ? ' off' : info.amount < lowBelow ? ' low' : '');
+  value.textContent = info?.ok ? `${symbol}${info.amount.toFixed(2)}`
+    : t({ no_key: 'balNoKey', no_permission: 'balNoPerm' }[info?.reason] || 'balErr');
+  row.title = info?.detail || '';
+}
+let lowBalance = '';
+async function refreshBalances() {
+  try {
+    const b = await apiFetch('/balances');
+    paintBalance('balDeepgram', b.deepgram, '$', 5);
+    paintBalance('balDeepseek', b.deepseek, b.deepseek?.currency === 'USD' ? '$' : '¥', 5);
+    lowBalance = [['Deepgram', b.deepgram], ['DeepSeek', b.deepseek]]
+      .filter(([, info]) => info?.ok && info.amount < 5).map(([name]) => name).join(' / ');
+  } catch (e) {}
+}
+
+/* ─── Export ─── */
+function exportTranscript() {
+  const text = getTxcript();
+  if (!text) { toast(t('exportEmpty'), 'warn', 2500); return; }
+  const title = activeSessionTitle || 'transcript';
+  const rows = segs.filter(s => s.en);
+  const body = rows.length ? rows.map(s => s.zh ? `${s.en}\n\n> ${s.zh}` : s.en).join('\n\n') : text;
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([`# ${title}\n\n${body}\n`], { type: 'text/markdown;charset=utf-8' }));
+  a.download = `${title.replace(/[\\/:*?"<>|]+/g, '-')}.md`;
+  a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+/* ─── Render ─── */
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function rowsMode() { return segs.length > 0; }
+function getTxcript() { return rowsMode() ? finalTx : ($('transcriptEl').innerText || '').trim(); }
+
+function paintSeg(i) {
+  const s = segs[i], node = $('transcriptEl');
+  let el = segEls[i];
+  if (!el) {
+    el = document.createElement('div');
+    el.innerHTML = '<div class="seg-en"></div><div class="seg-zh"></div>';
+    segEls[i] = el; node.insertBefore(el, tailEl);
+  }
+  el.className = 'seg' + (s.final ? '' : ' spec') + (s.wait ? ' wait' : '') + (i === latestSeg ? ' latest' : '');
+  el.lastChild.dataset.wait = t('trWaiting');
+  el.hidden = !s.en;
+  el.firstChild.textContent = s.en;
+  paintZh(i, el.lastChild);
+  el.lastChild.className = 'seg-zh' + (s.failed && !s.zh ? ' failed' : '');
+}
+
+/* DeepSeek streams the Chinese in uneven bursts; show it at a steady pace that never falls more
+   than about a third of a second behind. Text loaded from history appears at once. */
+function paintZh(i, zhEl, instant) {
+  const s = segs[i];
+  if (!s.zh) { s.shown = 0; zhEl.textContent = s.failed ? t('trFailed') : ''; return; }
+  const onScreen = zhEl.textContent;
+  if (instant || (s.shown === undefined && !isRec && !stopPending)) s.shown = s.zh.length;
+  else if (s.shown === undefined) s.shown = s.zh.startsWith(onScreen) ? onScreen.length : 0;
+  else if (!s.zh.startsWith(onScreen.slice(0, s.shown))) s.shown = 0;   /* a revised sentence */
+  s.shown = Math.min(s.shown || 0, s.zh.length);
+  zhEl.textContent = s.zh.slice(0, s.shown);
+  if (s.shown < s.zh.length) { typing.add(i); if (!typeFrame) typeFrame = requestAnimationFrame(typeStep); }
+}
+function typeStep(now) {
+  const dt = Math.min(100, now - (typeLastAt || now)); typeLastAt = now;
+  for (const i of typing) {
+    const s = segs[i], el = segEls[i];
+    if (!s || !el || !s.zh || s.shown >= s.zh.length) { typing.delete(i); continue; }
+    s.typeAcc = (s.typeAcc || 0) + Math.max(40, (s.zh.length - s.shown) / 0.35) * dt / 1000;
+    const step = Math.floor(s.typeAcc);
+    if (step) { s.typeAcc -= step; s.shown = Math.min(s.zh.length, s.shown + step); el.lastChild.textContent = s.zh.slice(0, s.shown); }
+  }
+  if (typing.size) typeFrame = requestAnimationFrame(typeStep);
+  else { typeFrame = 0; typeLastAt = 0; }
+  if (followLatest) scrollToLatest();
+}
+
+/* The page (.convo) is what scrolls, not the card. Follow the newest line unless the reader has
+   scrolled up to re-read something; coming back near the bottom turns following on again. */
+function scrollToLatest() {
+  const box = document.querySelector('.convo');
+  if (box) box.scrollTop = box.scrollHeight;
+}
+(function watchReaderScroll() {
+  const box = document.querySelector('.convo');
+  const touched = () => { userScrollAt = performance.now(); };
+  ['wheel', 'touchmove', 'keydown', 'mousedown'].forEach(type => box.addEventListener(type, touched, { passive: true }));
+  box.addEventListener('scroll', () => {
+    const nearBottom = box.scrollHeight - box.scrollTop - box.clientHeight < 120;
+    if (nearBottom) followLatest = true;
+    else if (performance.now() - userScrollAt < 500) followLatest = false;
+  }, { passive: true });
+})();
+
+/* Rows are patched in place, and the view only follows the newest line while the reader is at
+   the bottom, so scrolling up to re-read something is not interrupted. */
+function renderRows(only) {
+  const node = $('transcriptEl');
+  if (!tailEl || tailEl.parentNode !== node) {
+    /* A full rebuild (opening a session, reconnecting) appears at once instead of animating every row. */
+    node.innerHTML = ''; segEls = [];
+    tailEl = document.createElement('div'); tailEl.className = 'seg seg-tail'; node.appendChild(tailEl);
+    only = undefined;
+    node.classList.add('instant');
+    requestAnimationFrame(() => requestAnimationFrame(() => node.classList.remove('instant')));
+  }
+  const newest = segs.findLastIndex(x => x.en && x.zh), previous = latestSeg;
+  latestSeg = newest;
+  if (only === undefined) segs.forEach((_, i) => paintSeg(i));
+  else {
+    if (only >= 0) paintSeg(only);
+    if (newest !== previous) [previous, newest].forEach(i => { if (i >= 0 && i !== only && segs[i]) paintSeg(i); });
+  }
+  tailEl.textContent = tailText; tailEl.hidden = !tailText;
+  node.classList.toggle('empty', !segs.some(s => s.en) && !tailText);
+  node.style.color = 'var(--ink)';
+  node.contentEditable = 'false';
+  if (followLatest) scrollToLatest();
+  updateMiniTx(miniText());
+}
+
+function miniText() {
+  const lines = [];
+  segs.filter(s => s.en).slice(-2).forEach(s => { lines.push(s.en); if (s.zh) lines.push(s.zh); });
+  if (tailText) lines.push(tailText);
+  return lines.join('\n');
+}
+
+/* The part of the transcript that no sentence row shows yet. */
+function uncoveredText() {
+  let cursor = 0;
+  for (const s of segs) {
+    if (!s.en || !s.final) continue;
+    const at = finalTx.indexOf(s.en, cursor);
+    if (at < 0) return '';
+    cursor = at + s.en.length;
+  }
+  return finalTx.slice(cursor).trim();
+}
+
+function resetRows() { segs = []; segEls = []; tailEl = null; tailText = ''; segBase = 0; latestSeg = -1; }
+
+function renderTx(display = finalTx, muted = false, committed = display) {
+  finalTx = (committed || '').trim();
+  if (rowsMode()) { renderRows(tailEl ? -1 : undefined); return; }
+  tailEl = null;
+  const visible = (display || '').trim();
+  const node = $('transcriptEl');
+  if (!visible) { node.innerHTML = ''; node.classList.add('empty'); node.style.color = 'var(--ink)'; updateMiniTx(''); return; }
+  node.classList.remove('empty');
+  node.style.color = muted ? 'var(--ink-3)' : 'var(--ink)';
+  node.innerHTML = `<span class="t-final">${esc(visible)}</span>`;
+  if (followLatest) scrollToLatest();
+  updateMiniTx(visible);
+}
+
+/* ─── API ─── */
+function cid() {
+  let id = localStorage.getItem(SK.cid);
+  if (!id) {
+    id = crypto.randomUUID ? crypto.randomUUID() : `c-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    localStorage.setItem(SK.cid, id);
+  }
+  return id;
+}
+
+async function apiFetch(path, opts = {}) {
+  const h = new Headers(opts.headers || {});
+  h.set('X-Client-Id', cid());
+  if (opts.body && !h.has('Content-Type')) h.set('Content-Type', 'application/json');
+  const r  = await fetch(`${API}${path}`, { ...opts, headers: h });
+  const ct = r.headers.get('content-type') || '';
+  const p  = ct.includes('application/json') ? await r.json() : await r.text();
+  if (!r.ok) throw new Error(p?.detail || 'Request failed');
+  return p;
+}
+
+/* ─── Sessions ─── */
+function getLegacyRecents() { try { const r = JSON.parse(localStorage.getItem(SK.recents) || '[]'); return Array.isArray(r) ? r : []; } catch { return []; } }
+
+async function migrateLegacyHistory() {
+  if (localStorage.getItem(SK.historyMigrated) === '1') return;
+  const items = getLegacyRecents();
+  try {
+    if (items.length) {
+      const result = await apiFetch('/history/import', { method: 'POST', body: JSON.stringify({ items }) });
+      toast(`Imported ${result.imported} existing session${result.imported === 1 ? '' : 's'}.`, 'ok', 2500);
+    }
+    localStorage.removeItem(SK.recents);
+    localStorage.setItem(SK.historyMigrated, '1');
+  } catch (e) {
+    toast(e.message || t('errMigrate'), 'error');
+  }
+}
+
+async function refreshHistory() {
+  const query = ($('historySearch')?.value || '').trim();
+  try {
+    const result = await apiFetch(`/history?q=${encodeURIComponent(query)}&limit=50`);
+    historyRows = result.items || [];
+    historyTotal = result.total || 0;
+    historyNextNumber = result.nextNumber || 1;
+    renderHistory();
+  } catch (e) {
+    $('historyList').innerHTML = `<div class="h-empty">${t('historyUnavailable')}</div>`;
+    toast(e.message || t('errLoadHistory'), 'error');
+  }
+}
+
+function queueHistorySearch() {
+  clearTimeout(historySearchTimer);
+  historySearchTimer = setTimeout(refreshHistory, 180);
+}
+
+function renderHistory() {
+  $('historyCount').textContent = historyTotal ? t('historyCount', { n: historyRows.length, total: historyTotal }) : '';
+  if (!historyRows.length) { $('historyList').innerHTML = `<div class="h-empty">${t('emptyHistory')}</div>`; return; }
+  $('historyList').innerHTML = historyRows.map((r, i) => `
+    <div class="h-item" style="animation-delay:${i * 0.04}s" onclick="loadSession('${r.id}')">
+      <span class="h-icon"><svg width="11" height="13" viewBox="0 0 11 13" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="0.7" y="0.7" width="9.6" height="11.6" rx="2"/><line x1="2.5" y1="4" x2="8.5" y2="4"/><line x1="2.5" y1="6.5" x2="8.5" y2="6.5"/><line x1="2.5" y1="9" x2="6" y2="9"/></svg></span>
+      <span class="h-name">${esc(r.title || t('untitled'))}</span>
+      <div style="position:relative;" onclick="event.stopPropagation()">
+        <button class="h-more" onclick="toggleMenu('${r.id}',event)"><svg width="12" height="4" viewBox="0 0 12 4" fill="currentColor"><circle cx="2" cy="2" r="1.4"/><circle cx="6" cy="2" r="1.4"/><circle cx="10" cy="2" r="1.4"/></svg></button>
+        <div class="h-menu${menuOpen === r.id ? ' open' : ''}">
+          <button onclick="renameSession('${r.id}')">${t('rename')}</button>
+          <button class="del" onclick="deleteSession('${r.id}')">${t('delete')}</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function toggleMenu(id, e) { e.stopPropagation(); menuOpen = menuOpen === id ? null : id; renderHistory(); }
+
+async function renameSession(id) {
+  menuOpen = null;
+  const item = historyRows.find(x => x.id === id); if (!item) return;
+  const n = prompt(t('rename'), item.title || ''); if (n === null) return;
+  const title = (n || '').trim() || item.title || t('untitled');
+  if (sid === id) activeSessionTitle = title;
+  try {
+    await historySaveChain;
+    const current = await apiFetch(`/history/${encodeURIComponent(id)}`);
+    current.title = title;
+    await apiFetch(`/history/${encodeURIComponent(id)}`, { method: 'PUT', body: JSON.stringify(current) });
+    await refreshHistory();
+  } catch (e) {
+    toast(e.message || t('errRename'), 'error');
+  }
+}
+
+function resetActiveSession() {
+  sid = null; activeSessionTitle = ''; finalTx = '';
+  resetRows();
+  renderTx('');
+  $('transcriptEl').contentEditable = 'true';
+}
+
+/* Sentences arrive every few seconds; saving on each one would hammer the disk for nothing. */
+function persistSoon() {
+  if (persistTimer) return;
+  persistTimer = setTimeout(() => { persistTimer = null; persist(); }, 2500);
+}
+async function flushPersist() {
+  if (!persistTimer) return;
+  clearTimeout(persistTimer); persistTimer = null;
+  await persist();
+}
+/* Incoming sentences belong to the open session, so it cannot be swapped out mid-recording. */
+function busyRecording() {
+  if (!isRec && !stopPending) return false;
+  toast(t('stopFirst'), 'warn', 2500);
+  return true;
+}
+
+async function deleteSession(id) {
+  menuOpen = null;
+  if (sid === id && busyRecording()) return;
+  try {
+    await historySaveChain;
+    await apiFetch(`/history/${encodeURIComponent(id)}`, { method: 'DELETE' });
+    if (sid === id) resetActiveSession();
+    await refreshHistory();
+  } catch (e) {
+    toast(e.message || t('errDelete'), 'error');
+  }
+}
+
+async function clearAllSessions() {
+  menuOpen = null;
+  if (busyRecording()) return;
+  if (!confirm(t('confirmClearAll'))) return;
+  try {
+    await historySaveChain;
+    await apiFetch('/history', { method: 'DELETE' });
+    resetActiveSession();
+    await refreshHistory();
+    toast(t('historyDeleted'), 'ok', 2200);
+  } catch (e) {
+    toast(e.message || t('errClearHistory'), 'error');
+  }
+}
+
+async function persist() {
+  finalTx = getTxcript();
+  const preview = finalTx; if (!preview) return;
+  const title = activeSessionTitle || `Session ${historyNextNumber}`;
+  const itemId = sid || `s-${Date.now()}-${Math.random().toString(36).slice(2,7)}`;
+  const isNew = !sid;
+  if (!sid) {
+    sid = itemId;
+    activeSessionTitle = title;
+    historyNextNumber += 1;
+  }
+  const item = { id: itemId, title, preview, transcript: finalTx,
+    segments: segs.filter(s => s.en && s.final).map(s => ({ en: s.en, zh: s.zh })),
+    srcLang: 'en', scene: $('sceneInput').value };
+  try {
+    historySaveChain = historySaveChain.catch(() => {}).then(() =>
+      apiFetch(`/history/${encodeURIComponent(item.id)}`, { method: 'PUT', body: JSON.stringify(item) })
+    );
+    await historySaveChain;
+    activeSessionTitle = title;
+    if (isNew) await refreshHistory();
+  } catch (e) {
+    toast(e.message || t('errSave'), 'error');
+  }
+}
+
+async function loadSession(id) {
+  menuOpen = null;
+  if (busyRecording()) return;
+  try {
+    await flushPersist();
+    const r = await apiFetch(`/history/${encodeURIComponent(id)}`);
+    sid = r.id; activeSessionTitle = r.title || ''; finalTx = r.transcript || '';
+    $('sceneInput').value = r.scene || '';
+    resetRows();
+    segs = (r.segments || []).filter(x => x.en).map(x => ({ en: x.en, zh: x.zh || '', final: true, shown: (x.zh || '').length }));
+    followLatest = true;
+    renderTx(finalTx);
+    $('transcriptEl').contentEditable = rowsMode() ? 'false' : 'true';
+    refreshCourse();
+    saveConfig();
+  } catch (e) {
+    toast(e.message || t('errOpen'), 'error');
+  }
+}
+
+async function createNew() {
+  if (busyRecording()) return;
+  clearTimeout(persistTimer); persistTimer = null;
+  finalTx = getTxcript();
+  if (finalTx || ($('sceneInput').value || '').trim()) await persist();
+  resetActiveSession();
+}
+
+/* ─── Config ─── */
+let courseTimer = null;
+function saveConfig() {
+  localStorage.setItem(SK.scene, $('sceneInput').value);
+  clearTimeout(courseTimer); courseTimer = setTimeout(refreshCourse, 300);
+}
+function restoreConfig() {
+  $('sceneInput').value = localStorage.getItem(SK.scene) || '';
+  ['sceneInput'].forEach(id => {
+    $(id).addEventListener('input',  saveConfig);
+    $(id).addEventListener('change', saveConfig);
+  });
+}
+
+/* ─── Theme ─── */
+function applyTheme(theme, persist = true) {
+  const isLight = theme === 'light';
+  document.body.classList.toggle('theme-light', isLight);
+  const btn = $('themeToggle');
+  if (btn) {
+    btn.setAttribute('aria-label', isLight ? t('themeAriaToDark') : t('themeAriaToLight'));
+    btn.setAttribute('aria-pressed', String(isLight));
+  }
+  const tip = $('themeTooltip');
+  if (tip) tip.textContent = isLight ? t('themeToDark') : t('themeToLight');
+  if (persist) localStorage.setItem(SK.theme, isLight ? 'light' : 'dark');
+}
+function restoreTheme() {
+  applyTheme(localStorage.getItem(SK.theme) === 'light' ? 'light' : 'dark', false);
+}
+function toggleTheme() {
+  applyTheme(document.body.classList.contains('theme-light') ? 'dark' : 'light');
+}
+
+/* ─── Mini Window (Document Picture-in-Picture) ─── */
+
+const PIP_STYLE = `
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-font-smoothing: antialiased; }
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
+@keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.7)} }
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  background: #0E0C0A; color: rgba(255,255,255,0.88);
+  height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+}
+.pip-bar {
+  display: flex; align-items: center; gap: 7px;
+  padding: 10px 13px 8px; flex-shrink: 0;
+  background: rgba(255,255,255,0.04);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  -webkit-app-region: drag; cursor: default;
+}
+.pip-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; transition: filter 0.15s; }
+.pip-dot:hover { filter: brightness(1.3); }
+.pip-dot.red    { background: #FF5F57; cursor: pointer; -webkit-app-region: no-drag; }
+.pip-dot.yellow { background: #FFBD2E; }
+.pip-dot.green  { background: #28C840; }
+.pip-label { flex: 1; text-align: center; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.25); margin-right: 33px; }
+.pip-live { width: 6px; height: 6px; border-radius: 50%; background: #F26419; opacity: 0; flex-shrink: 0; transition: opacity 0.3s; animation: blink 1.1s ease-in-out infinite; }
+.pip-live.on { opacity: 1; }
+.pip-section { padding: 8px 14px 10px; flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+.pip-section-label { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
+.pip-section-label::after { content: ''; flex: 1; height: 1px; background: currentColor; opacity: 0.15; }
+.pip-section .pip-section-label { color: rgba(147,197,253,0.7); }
+.pip-text { font-size: 13px; line-height: 1.6; overflow: hidden; flex: 1; word-break: break-word; white-space: pre-wrap; }
+.pip-text.ph { color: rgba(255,255,255,0.2); font-style: italic; }
+.pip-section .pip-text { color: rgba(219,234,254,0.92); }
+`;
+
+const PIP_STYLE_LIGHT = `${PIP_STYLE}
+body { background: #f6f4ee; color: #20231f; }
+.pip-bar { background: rgba(31,39,33,.035); border-bottom-color: rgba(31,39,33,.10); }
+.pip-label, .pip-text.ph { color: rgba(31,39,33,.32); }
+.pip-section .pip-section-label { color: #647aa8; }
+.pip-section .pip-text { color: #20231f; }
+`;
+
+const PIP_HTML = `
+<div class="pip-bar">
+  <span class="pip-dot red"    id="pipClose"></span>
+  <span class="pip-dot yellow"></span>
+  <span class="pip-dot green"></span>
+  <span class="pip-label">Live</span>
+  <span class="pip-live" id="pipLive"></span>
+</div>
+<div class="pip-section">
+  <div class="pip-section-label">Transcript</div>
+  <div class="pip-text ph" id="pipTx">Waiting for speech…</div>
+</div>
+`;
+
+async function toggleMini() {
+  /* Close if already open */
+  if (miniVisible) {
+    await restoreMainWindow();
+    return;
+  }
+
+  if (window.hahahav2Desktop) {
+    await window.hahahav2Desktop.enterMiniMode();
+    miniVisible = true;
+    document.body.classList.add('mini-mode');
+    $('miniwin').classList.add('show');
+    $('railMini').classList.add('active');
+    updateMiniTx(finalTx);
+    $('miniLive').classList.toggle('on', isRec);
+    return;
+  }
+
+  /* Try Document Picture-in-Picture (Chrome 116+) — true always-on-top across all tabs */
+  if (window.documentPictureInPicture) {
+    try {
+      pipWin = await documentPictureInPicture.requestWindow({ width: 340, height: 230 });
+
+      const style = pipWin.document.createElement('style');
+      style.textContent = document.body.classList.contains('theme-light') ? PIP_STYLE_LIGHT : PIP_STYLE;
+      pipWin.document.head.appendChild(style);
+      pipWin.document.body.innerHTML = PIP_HTML;
+      pipWin.document.querySelector('.pip-section-label').textContent = t('transcript');
+
+      pipTxEl   = pipWin.document.getElementById('pipTx');
+      pipLiveEl = pipWin.document.getElementById('pipLive');
+
+      pipWin.document.getElementById('pipClose').addEventListener('click', () => toggleMini());
+      pipWin.addEventListener('pagehide', () => {
+        pipWin = null; pipTxEl = null; pipLiveEl = null;
+        miniVisible = false; $('railMini').classList.remove('active');
+      });
+
+      miniVisible = true;
+      $('railMini').classList.add('active');
+      updateMiniTx(finalTx);
+      if (isRec && pipLiveEl) pipLiveEl.classList.add('on');
+      return;
+    } catch(e) {
+      console.warn('[pip] Document PiP failed, falling back to overlay:', e);
+    }
+  }
+
+  /* Fallback: CSS overlay on current page */
+  if (!window.documentPictureInPicture) {
+    toast(t('pipNeedsChrome'), 'warn', 4000);
+  }
+  miniVisible = true;
+  document.body.classList.add('mini-mode');
+  $('miniwin').classList.add('show');
+  $('railMini').classList.add('active');
+  updateMiniTx(finalTx);
+}
+
+async function restoreMainWindow() {
+  if (pipWin) { pipWin.close(); pipWin = null; }
+  $('miniwin').classList.remove('show');
+  document.body.classList.remove('mini-mode');
+  $('railMini')?.classList.remove('active');
+  miniVisible = false; pipTxEl = null; pipLiveEl = null;
+  if (window.hahahav2Desktop) await window.hahahav2Desktop.exitMiniMode();
+}
+
+function _lastLines(text, n) {
+  if (!text || !text.trim()) return '';
+  return text.split('\n').filter(l => l.trim()).slice(-n).join('\n');
+}
+
+function _setPipText(el, text, ph) {
+  if (!el) return;
+  const c = _lastLines(text, 3);
+  if (!c) { el.textContent = ph; el.classList.add('ph'); }
+  else    { el.classList.remove('ph'); el.textContent = c; el.scrollTop = el.scrollHeight; }
+}
+
+function updateMiniTx(text) {
+  /* PiP window */
+  _setPipText(pipTxEl, text, t('miniTxPh'));
+  /* CSS overlay fallback */
+  if (!pipTxEl && miniVisible) {
+    const el = $('miniTx'), c = _lastLines(text, 3);
+    if (!c) { el.textContent = t('miniTxPh'); el.classList.add('empty-ph'); }
+    else    { el.classList.remove('empty-ph'); el.textContent = c; el.scrollTop = el.scrollHeight; }
+  }
+}
+
+/* CSS overlay drag (fallback only) */
+(function() {
+  const win = $('miniwin'), bar = $('miniwinBar');
+  bar.addEventListener('mousedown', e => {
+    if (e.target.classList.contains('miniwin-dot') || e.target.closest('.miniwin-restore')) return;
+    e.preventDefault(); miniDragging = true;
+    const rect = win.getBoundingClientRect();
+    win.style.right = 'auto'; win.style.bottom = 'auto';
+    win.style.left = rect.left + 'px'; win.style.top = rect.top + 'px';
+    miniDX = e.clientX - rect.left; miniDY = e.clientY - rect.top;
+    bar.style.cursor = 'grabbing';
+  });
+  document.addEventListener('mousemove', e => {
+    if (!miniDragging) return;
+    let x = e.clientX - miniDX, y = e.clientY - miniDY;
+    x = Math.max(0, Math.min(window.innerWidth  - win.offsetWidth,  x));
+    y = Math.max(0, Math.min(window.innerHeight - win.offsetHeight, y));
+    win.style.left = x + 'px'; win.style.top = y + 'px';
+  });
+  document.addEventListener('mouseup', () => { if (miniDragging) { miniDragging = false; bar.style.cursor = 'grab'; } });
+})();
+
+/* ─── Ripple ─── */
+document.querySelectorAll('.rail-btn').forEach(btn => {
+  btn.addEventListener('click', e => {
+    const r = document.createElement('span');
+    r.className = 'ripple-circle'; r.style.left = e.offsetX + 'px'; r.style.top = e.offsetY + 'px';
+    btn.appendChild(r); setTimeout(() => r.remove(), 500);
+  });
+});
+
+$('miniRestoreBtn').addEventListener('click', e => {
+  e.preventDefault();
+  e.stopPropagation();
+  restoreMainWindow();
+});
+
+/* ─── Keyboard ─── */
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'n') { e.preventDefault(); createNew(); }
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'm') { e.preventDefault(); toggleMini(); }
+  if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'l') { e.preventDefault(); toggleTheme(); }
+  if (e.key === 'Escape') { menuOpen = null; renderHistory(); }
+});
+document.addEventListener('click', () => { if (menuOpen !== null) { menuOpen = null; renderHistory(); } });
+
+document.addEventListener('visibilitychange', () => {
+  if (!isRec || document.visibilityState !== 'visible') return;
+  acquireWakeLock();
+  if (ctx && ctx.state !== 'running') ctx.resume().catch(() => {});
+});
+
+/* ─── Cleanup ─── */
+window.addEventListener('beforeunload', () => { if (persistTimer) persist(); if (isRec) { isRec = false; killAudio(); } releaseWakeLock(); });
+
+/* ─── Init ─── */
+async function pollHealth() {
+  if (isRec || sttWs) return; /* connectStt() owns the status dot while a session is live */
+  try {
+    const h = await apiFetch('/health');
+    translationReady = !!h.translationReady; paintTranslateToggle();
+    setConnStatus('ok');
+  } catch { setConnStatus('off'); }
+}
+
+async function init() {
+  restoreTheme(); restoreConfig(); renderTx(''); applyLang();
+  $('transcriptEl').addEventListener('input', () => {
+    if (isRec) return;
+    finalTx = getTxcript();
+    $('transcriptEl').classList.toggle('empty', !finalTx);
+  });
+  await pollHealth();
+  setInterval(pollHealth, 20000);
+  refreshBalances();
+  setInterval(refreshBalances, 5 * 60 * 1000);
+  paintSource(); refreshCourse(); refreshCourseList();
+  await migrateLegacyHistory();
+  await refreshHistory();
+  sid = null; activeSessionTitle = '';
+}
+
+init();
+</script>
+</body>
+</html>
